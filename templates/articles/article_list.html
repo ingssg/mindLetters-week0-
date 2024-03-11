@@ -1,4 +1,77 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>List All Articles page</h1>
+<h1></h1>
+<style>
+    table {
+        margin-left: 20px;
+        width: 70%;
+    }
+
+    table thead tr {
+        text-align: center;
+    }
+
+    .table-wrapper {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-direction: column;
+    }
+
+    .btn-wrapper {
+        width: 80%;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        margin-left: 15px;
+    }
+</style>
+
+<div class="table-wrapper">
+    <div class="btn-wrapper">
+        <label style="font-size: 18px;">주제:
+            <select name="topic">
+                <option value="all">전체 보기</option>
+                <option value="good">칭찬해요</option>
+                <option value="bad">싫어요</option>
+            </select>
+        </label>
+        <button type="button" class="btn btn-primary">작성하기</button>
+    </div>
+    <table border="1" class="table table-bordered" style="width: 80%;">
+        <colgroup>
+            <col width="15%">
+            <col width="15%">
+            <col width="55%">
+            <col width="15%">
+        </colgroup>
+        <thead class="thead-dark">
+        <tr>
+            <th>주제</th>
+            <th>작성자</th>
+            <th>제목</th>
+            <th>날짜</th>
+        </tr>
+        </thead>
+        {% for article in articles %}
+        <tbody>
+        <tr>
+            {% if (article.topic == "good") %}
+            <td>좋아요</td>
+            {% else %}
+            <td>싫어요</td>
+            {% endif %}
+            {% if (article.is_blind == True) %}
+            <td>익명</td>
+            {% else %}
+            <td>{{article.author}}</td>
+            {% endif %}
+            <td>{{article.title}}</td>
+            <td>{{article.date}}</td>
+        </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}
