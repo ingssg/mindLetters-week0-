@@ -10,6 +10,18 @@ def signin():
     return render_template('signin.html')
 
 
+@users_blueprint.route("/signin", methods=["POST"])
+def signin_user():
+    # 로그인 기능 구현
+    return
+
+
 @users_blueprint.route("/signup")
 def signup():
     return render_template('signup.html')
+
+
+@users_blueprint.route("/signup", methods=["POST"])
+def create_user():
+    # 회원 가입 기능 구현
+    return
