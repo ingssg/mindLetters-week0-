@@ -8,13 +8,6 @@ articles_blueprint = Blueprint("articles_blueprint", __name__, template_folder="
 
 @articles_blueprint.route("/")
 def get_all_articles():
-    # list_of_articles = [
-    #     {"topic": "good", "author": "홍길동", "title": "칭찬합니다.", "date": "2024-03-11", "is_blind": False},
-    #     {"topic": "bad", "author": "양장피", "title": "싫습니다.", "date": "2024-03-11", "is_blind": True},
-    #     {"topic": "bad", "author": "김꺽정", "title": "싫습니다.", "date": "2024-03-10", "is_blind": True},
-    #     {"topic": "good", "author": "임꺽정", "title": "칭찬합니다.", "date": "2024-03-09", "is_blind": False}
-    # ]
-
     list_of_articles = list(articles_collection.find())
 
     # ObjectId 를 문자열로 변환
