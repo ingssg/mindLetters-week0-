@@ -10,6 +10,18 @@ def get_all_articles():
     return render_template('article_list.html')
 
 
+@articles_blueprint.route("/", methods=["POST"])
+def create_article():
+    # 게시물 생성 기능 구현
+    return
+
+
+@articles_blueprint.route("/", methods=["DELETE"])
+def remove_article():
+    # 게시물 삭제 기능 구현
+    return
+
+
 @articles_blueprint.route("/<string:id>")
 def get_one_articles(id):
     return render_template('article_detail.html', id=id)
