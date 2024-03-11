@@ -1,3 +1,5 @@
+# https://www.geeksforgeeks.org/templating-with-jinja2-in-flask/
+
 from flask import Flask
 from services.users import users_blueprint
 from services.articles import articles_blueprint
