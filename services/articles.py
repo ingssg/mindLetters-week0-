@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from db import articles_collection
 
 # html 파일이 있는 folder path 정의
 articles_blueprint = Blueprint("articles_blueprint", __name__, template_folder="../templates/articles")
