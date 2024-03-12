@@ -92,8 +92,10 @@ def update_article(id):
 
 @articles_blueprint.route("/<string:id>")
 def get_one_articles(id):
+    # author = request.args.get("author")
+    author = "commentUser"
     article = articles_collection.find_one({'_id': ObjectId(id)})
-    return render_template('article_detail.html', article=article)
+    return render_template('article_detail.html', article=article, author=author)
 
 
 # 65ef8d9cf8506452fbb03c86
