@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, redirect, url_for, request
 from db import articles_collection, users_collection
-from datetime import datetime
+from datetime import datetime, timedelta
 import jwt
 import os
 import hashlib
@@ -8,6 +8,17 @@ import hashlib
 # html 파일이 있는 folder path 정의
 users_blueprint = Blueprint("users_blueprint", __name__, template_folder="../templates/users")
 
+# JWT Secret Key
+JWT_SECRET_KEY = "secretkeysecretkeysecretkeysecretkeysecretkey"
+
+# JWT 토큰 생성
+def generate_jwt_token(user_id):
+    payload = {
+        '_id': user_id,
+        'exp': datetime.utcnow() + timedelta(minutes=30)
+    }
+    token = jwt.encode(payload, JWT_SECRET_KEY, algorithm='HS256')
+    return token
 
 # 솔트 생성
 def generate_salt():
@@ -40,13 +51,18 @@ def signin_user():
         return render_template('signin.html', error="모든 필드를 입력해주세요.")
 
     user_info = users_collection.find_one({"id": user['id']})
-    salt = user_info['salt']
+    
+    if not user_info:
+        return render_template('signin.html', error="존재하지 않는 아이디입니다.")
 
     print(user['password'] + '====' + user_info['hashed_password'])
-    if(hash_password(user['password'], salt) != user_info['hashed_password']):
-        return render_template('signin.html', error="로그인 정보가 올바르지 않습니다.")
+    if(hash_password(user['password'], user_info['salt']) != user_info['hashed_password']):
+        return render_template('signin.html', error="비밀번호가 일치하지 않습니다.")
 
-    return render_template('articles/article_list.html')
+    # JWT 토큰 생성
+    jwt_token = generate_jwt_token(user['_id'])
+
+    return render_template('articles/article_list.html', jwt_token=jwt_token)
 
 @users_blueprint.route("/signup")
 def signup():
@@ -73,7 +89,7 @@ def create_user():
         return render_template('signup.html', error="모든 필드를 입력해주세요.")
     
     # 비밀번호 길이 확인
-    if len(user['password']) < 8:
+    if len(request.form['password']) < 8:
         return render_template('signup.html', error="비밀번호는 최소 8자 이상이어야 합니다.")
     
     # 비밀번호 & 비밀번호 확인 일치 여부 확인

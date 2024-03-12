@@ -1,4 +1,46 @@
-{% extends "layout.html" %}
-{% block content %}
-<h1>List All Articles page</h1>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>article_list</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        /* CSS 스타일 시트에 헤더 컴포넌트의 스타일을 지정합니다. */
+        header {
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+        }
+    </style>
+    <script>
+      const saveTokenToLocalStorage = (token) => localStorage.setItem('jwt_token', token);
+      
+      const getTokenFromLocalStorage = () => localStorage.getItem('jwt_token');
+
+      const removeTokenFromLocalStorage = () => localStorage.removeItem('jwt_token');
+
+      window.onload = function() {
+        const jwtToken = "{{jwt_token}}";
+        if(jwtToken) {
+          saveTokenToLocalStorage(jwtToken);
+        }
+
+
+      };
+
+    </script>
+</head>
+<body>
+<header>
+    <h1>Mind Letter</h1>
+</header>
+</body>
+</html>
