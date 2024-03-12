@@ -27,7 +27,7 @@ def get_all_articles():
     total = articles_collection.count_documents(filter)
 
     # todo author 를 작성자의 ObjectId 로 설정 후, GET 요청시 lookup 해 오도록 변경
-    list_of_articles = list(articles_collection.find(filter).skip(skip).limit(limit))
+    list_of_articles = list(articles_collection.find(filter).sort({'_id': -1}).skip(skip).limit(limit))
 
     # ObjectId 를 문자열로 변환
     for article in list_of_articles:
