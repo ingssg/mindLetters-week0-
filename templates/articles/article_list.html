@@ -77,9 +77,26 @@
     function likeArticle(articleDiv) {
         var trElement = articleDiv.closest('tr');
         var articleId = trElement.getAttribute('data-id');
-        console.log(articleId)
+
         $.ajax({
             type: 'POST',
+            url: `/articles/likes/${articleId}`,
+            success: function (response) {
+                if (response['result'] == "success") {
+                    window.location.reload()
+                } else {
+                    alert("서버 오류!")
+                }
+            }
+        })
+    }
+
+    function dislikeArticle(articleDiv) {
+        var trElement = articleDiv.closest('tr');
+        var articleId = trElement.getAttribute('data-id');
+
+        $.ajax({
+            type: 'DELETE',
             url: `/articles/likes/${articleId}`,
             success: function (response) {
                 if (response['result'] == "success") {
@@ -153,7 +170,7 @@
             <td>{{article.created_at}}</td>
             <td style="text-align: center">
                 {% if (userId in article.likes) %}
-                <div class="clickable" onclick="likeArticle('abc')" data-id={{article._id}}>
+                <div class="clickable" onclick="dislikeArticle(this)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red"
                          class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
@@ -161,7 +178,7 @@
                     </svg>
                 </div>
                 {% else %}
-                <div class="clickable" onclick="likeArticle(this)" data-id={{article._id}}>
+                <div class="clickable" onclick="likeArticle(this)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red"
                          class="bi bi-heart"
                          viewBox="0 0 16 16">
