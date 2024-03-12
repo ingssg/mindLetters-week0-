@@ -80,7 +80,7 @@
         </thead>
         {% for article in articles %}
         <tbody>
-        <tr>
+        <tr data-id="{{article._id}}">
             {% if (article.topic == "good") %}
             <td>좋아요</td>
             {% else %}
