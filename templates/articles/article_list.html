@@ -70,21 +70,16 @@
 </style>
 
 <script>
-    const saveTokenToLocalStorage = (token) => localStorage.setItem('jwt_token', token);
+    let token
 
     const getTokenFromLocalStorage = () => localStorage.getItem('jwt_token');
 
     const removeTokenFromLocalStorage = () => localStorage.removeItem('jwt_token');
 
-    window.onload = function() {
-        const jwtToken = "{{jwt_token}}";
-        if(jwtToken) {
-            saveTokenToLocalStorage(jwtToken);
-        }
-
-
+    window.onload = function () {
+        token = getTokenFromLocalStorage()
+        console.log(token)
     };
-
 </script>
 
 <div class="table-wrapper">
