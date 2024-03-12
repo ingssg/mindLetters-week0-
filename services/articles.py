@@ -35,8 +35,6 @@ def get_all_articles():
     start_page = max(1, page_param - 5)
     end_page = min(total_pages, start_page + 9)
 
-    print(total_pages, end_page)
-
     return render_template('article_list.html', articles=articles_object, topic=topic_param,
                            pagination={"total": total, "page": page_param, "size": page_size,
                                        "start_page": start_page, "end_page": end_page})
