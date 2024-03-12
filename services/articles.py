@@ -68,7 +68,7 @@ def create_article():
     article = {'topic': request.form['topic'], 'author': request.form['author'], 'title': request.form['title'],
                'body': request.form['body'],
                'is_blind': request.form['is_blind'], 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
-               'updated_at': None, 'deleted_at': None}
+               'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
 
     articles_collection.insert_one(article)
     return jsonify({'result': 'success'})
