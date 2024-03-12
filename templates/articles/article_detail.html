@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <style>
-    dt, dd {
+    dt, dd , h6{
         display: inline;
     }
 
@@ -11,9 +11,25 @@
         margin-top: 5%;
     }
 
+    #info {
+      display: inline;
+      float: right;
+    }
+
 </style>
 <div id="container">
     <h6>{% if article.topic=="good" %}칭찬해요{% else %}싫어요{% endif %}</h6>
+
+    <dl id="info">
+      <dt>작성자 :</dt>
+      {% if article.is_blind %}
+      <dd>익명</dd>
+      {% else %}
+      <dd>{{article.author}}</dd>
+      {% endif %}
+      <dt>생성일 :</dt>
+      <dd>{{article.created_at}}</dd>
+    </dl>
 
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">제목</span>
@@ -26,17 +42,31 @@
         <textarea class="form-control" aria-label="With textarea" rows="10" disabled>{{article.body}}</textarea>
     </div>
     <br>
-    <dl>
-        <dt>작성자 :</dt>
-        {% if article.is_blind %}
-        <dd>익명</dd>
-        {% else %}
-        <dd>{{article.author}}</dd>
-        {% endif %}
-        <br>
-        <dt>생성일 :</dt>
-        <dd>{{article.created_at}}</dd>
 
-    </dl>
-</div>
+    <div class="input-group mb-3">
+      <textarea class="form-control" aria-label="With textarea" rows="1">{{article}}</textarea>
+      <button class="btn btn-outline-secondary" type="button" id="button-addon2">입력</button>
+    </div>
+
+  </div>
+
+<script>
+  function saveComment() {
+    // $.ajax({
+    //   type:'POST',
+    //   url: "/comments",
+    //   data: {author, is_blind, title, body, topic},
+    //   success: function(response) {
+    //     if(response['result'] == "success") {
+    //         alert("등록 완료!");
+    //         window.location.href = '/articles'
+    //     }else{
+    //         alert("서버 오류!")
+    //     }
+ 
+    //   }
+    // })
+
+  }
+</script>
 {% endblock %}
