@@ -9,6 +9,7 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.db_jungle
 users_collection = db.users
 articles_collection = db.articles
+comments_collection = db.comments
 
 # Send a ping to confirm a successful connection
 try:

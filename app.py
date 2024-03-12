@@ -3,6 +3,7 @@
 from flask import Flask
 from services.users import users_blueprint
 from services.articles import articles_blueprint
+from services.comments import comments_blueprint
 
 app = Flask(__name__)
 
@@ -12,6 +13,8 @@ app.register_blueprint(users_blueprint, url_prefix='/users')
 # 게시물 관련 블루프린트 등록
 app.register_blueprint(articles_blueprint, url_prefix='/articles')
 
+# 댓글 관련 블루프린트 등록
+app.register_blueprint(comments_blueprint, url_prefix='/comments')
 
 @app.route("/")
 def home():
