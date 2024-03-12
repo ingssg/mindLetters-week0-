@@ -33,4 +33,32 @@
 <div class="control">
     <button class="button is-primary" onclick="window.location.href='../users/signup'">회원가입</button>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#loginForm').submit(function (event) {
+            event.preventDefault(); // 폼 기본 동작 막기
+            var formData = {
+                'id': $('#id').val(),
+                'password': $('#password').val()
+            };
+            // AJAX 요청 보내기
+            $.ajax({
+                type: 'POST',
+                url: '/users/signin',
+                data: formData,
+                success: function (response) {
+                    localStorage.setItem('jwt_token', response.token);
+
+                    window.location.href = "/articles"
+                },
+                error: function (xhr, status, error) {
+                    // 에러 처리
+                    console.error('에러:', error);
+                }
+            });
+        });
+    });
+</script>
+
 {% endblock %}
