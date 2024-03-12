@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"
+integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+crossorigin="anonymous"></script>
+
+<style>
+  #container {
+    width: 50%;
+    margin: auto;
+    margin-top: 5%;
+  }
+
+  #save_button {
+    margin-top: 10px;
+    float: right;
+  }
+
+  #blind-container {
+    margin-bottom: 10px;
+  }
+
+  #type {
+    margin-top: 10px;
+  }
+</style>
+<div id="container">
+  <div id="blind-container" class="form-check">
+    <input id="is-blind" class="form-check-input" type="checkbox" value="" {% if type == "modify" and article.is_blind %}checked{% endif%} id="flexCheckDefault">
+    <label class="form-check-label" for="flexCheckDefault">
+      익명
+    </label>
+  </div>
+
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">제목</span>
+    <input id="title" type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1" value="{% if type == 'modify' %}{{article.title}}{% endif%}">
+  </div>
+  
+  <div class="input-group">
+    <span class="input-group-text">내용</span>
+    <textarea id="content" class="form-control" aria-label="With textarea" rows="10">{% if type == 'modify' %}{{article.body}}{% endif%}</textarea>
+  </div>
+  
+  <select id="type" class="form-select" aria-label="Default select example">
+    <option value="good" {% if (type == 'modify' and topic == 'good') or type=='view' %}selected{% endif%}>칭찬해요</option>
+    <option value="bad" {% if (type == 'modify' and topic == 'bod') %}selected{% endif%}>싫어요</option>
+  </select>
+
+  {% if type == 'view' %}
+  <button id="save_button" type="button" class="btn btn-primary btn-sm" onclick="createLetter()">작성하기</button>
+  {% else %}
+  <button id="save_button" type="button" class="btn btn-primary btn-sm" onclick="modifyLetter()">수정하기</button>
+  {% endif%}
+
+  <br>
+</div>
+
+<script>
+  function createLetter() {
+    let author = "{{author}}"
+    let is_blind = $('#is-blind').is(':checked')
+    let title = $('#title').val()
+    let body = $('#content').val()
+    let topic = $('#type').val()
+
+    $.ajax({
+      type:'POST',
+      url: "/articles",
+      data: {author, is_blind, title, body, topic},
+      success: function(response) {
+        if(response['result'] == "success") {
+            alert("등록 완료!");
+            window.location.href = '/articles'
+        }else{
+            alert("서버 오류!")
+        }
+ 
+      }
+    })
+  }
+
+  function modifyLetter() {
+    let is_blind = $('#is-blind').is(':checked')
+    let title = $('#title').val()
+    let body = $('#content').val()
+    let topic = $('#type').val()
+    console.log("modify", is_blind, title, body, topic)
+
+    $.ajax({
+      type:'PATCH',
+      url: "/articles/" + "{{id}}",
+      data: {is_blind, title, body, topic},
+      success: function(response) {
+        if(response['result'] == "success") {
+            alert("수정 완료!");
+            window.location.href = '/articles'
+
+        }else{
+            alert("서버 오류!")
+        }
+ 
+      }
+    })
+  }
+
+</script>
+{% endblock %}

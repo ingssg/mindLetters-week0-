@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+  dt,dd {
+    display: inline;
+  }
+
+  #container {
+    width: 50%;
+    margin: auto;
+    margin-top: 5%;
+  }
+
+</style>
+<div id="container">
+  <h6>{% if article.topic=="good" %}칭찬해요{% else %}싫어요{% endif %}</h6>
+
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">제목</span>
+    <input type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1" value={{article.title}} disabled>
+  </div>
+  
+  <div class="input-group">
+    <span class="input-group-text">내용</span>
+    <textarea class="form-control" aria-label="With textarea" rows="10" disabled>{{article.body}}</textarea>
+  </div>  
+  <br>
+  <dl>
+    <dt>작성자 : </dt>
+    <dd>{{article.author}}</dd><br>
+    <dt>생성일 : </dt>
+    <dd>{{article.created_at}}</dd>
+
+  </dl>
+</div>
+{% endblock %}
