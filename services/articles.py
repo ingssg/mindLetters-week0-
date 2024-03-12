@@ -67,7 +67,7 @@ def create_article():
     # 게시물 생성 기능 구현
     article = {'topic': request.form['topic'], 'author': request.form['author'], 'title': request.form['title'],
                'body': request.form['body'],
-               'is_blind': request.form['is_blind'], 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
+               'is_blind': bool(request.form['is_blind']), 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
                'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
 
     articles_collection.insert_one(article)
