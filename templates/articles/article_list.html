@@ -28,8 +28,11 @@
     }
 
     tbody tr:hover {
-        cursor: pointer;
         background-color: lightgray;
+    }
+
+    #title {
+        cursor: pointer
     }
 
     .pagination {
@@ -91,10 +94,11 @@
     </div>
     <table border="1" class="table table-bordered" style="width: 80%;">
         <colgroup>
-            <col width="15%">
-            <col width="15%">
-            <col width="55%">
-            <col width="15%">
+            <col width="13%">
+            <col width="13%">
+            <col width="50%">
+            <col width="13%">
+            <col width="7%">
         </colgroup>
         <thead class="thead-dark">
         <tr>
@@ -102,6 +106,7 @@
             <th>작성자</th>
             <th>제목</th>
             <th>날짜</th>
+            <th>공감하기</th>
         </tr>
         </thead>
         {% for article in articles %}
@@ -117,9 +122,25 @@
             {% else %}
             <td>{{article.author}}</td>
             {% endif %}
-            <td>{{article.title}}<span class="comment-count">({{ 0 if article.comments == None else article.comments|length }})</span>
+            <td id="title">{{article.title}}<span class="comment-count">({{ 0 if article.comments == None else article.comments|length }})</span>
             </td>
             <td>{{article.created_at}}</td>
+            <td style="text-align: center">
+                <!--                likes 는 좋아요를 누른 유저의 ObjectId 배열. 이 때 나의 아이디가 포함되어 있으면 채워진 하트, 포함되어 있지 않으면 빈 하트 렌더링-->
+                {% if (article.likes != None) %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red"
+                     class="bi bi-heart"
+                     viewBox="0 0 16 16">
+                    <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+                </svg>
+                {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red"
+                     class="bi bi-heart-fill" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                </svg>
+                {% endif %}
+            </td>
         </tr>
         </tbody>
         {% endfor %}
