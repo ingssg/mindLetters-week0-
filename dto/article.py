@@ -1,10 +1,13 @@
 class ArticleDTO:
-    def __init__(self, _id, topic, author, title, date, is_blind):
+    def __init__(self, _id, topic, author, title, body, created_at, updated_at, deleted_at, is_blind):
         self._id = _id
         self.topic = topic
         self.author = author
         self.title = title
-        self.date = date
+        self.body = body
+        self.created_at = created_at
+        self.updated_at = updated_at
+        self.deleted_at = deleted_at
         self.is_blind = is_blind
 
     def to_dict(self):
@@ -13,7 +16,10 @@ class ArticleDTO:
             "topic": self.topic,
             "author": self.author,
             "title": self.title,
-            "date": self.date,
+            "body": self.body,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "deleted_at": self.deleted_at,
             "is_blind": self.is_blind
         }
 
@@ -24,6 +30,9 @@ class ArticleDTO:
             topic=data.get("topic"),
             author=data.get("author"),
             title=data.get("title"),
-            date=data.get("date"),
+            body=data.get("body"),
+            created_at=data.get("created_at"),
+            updated_at=data.get("updated_at"),
+            deleted_at=data.get("deleted_at"),
             is_blind=data.get("is_blind")
         )
