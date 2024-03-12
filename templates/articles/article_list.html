@@ -33,17 +33,10 @@
     }
 </style>
 
-<script>
-    function changeTopic() {
-        const selectedTopic = document.getElementById('topicSelect').value
-        window.location.href = `/articles?topic=${selectedTopic}`
-    }
-</script>
-
 <div class="table-wrapper">
     <div class="btn-wrapper">
         <label style="font-size: 18px;">주제:
-            <select name="topic" id="topicSelect" onchange="changeTopic()">
+            <select name="topic" id="topicSelect" onchange="window.location.href = `/articles?topic=${this.value}`">
                 {% if (topic == "all") %}
                 <option value="all" selected>전체 보기</option>
                 <option value="good">칭찬해요</option>
