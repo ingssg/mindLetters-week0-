@@ -8,8 +8,8 @@ import hashlib
 # html 파일이 있는 folder path 정의
 users_blueprint = Blueprint("users_blueprint", __name__, template_folder="../templates/users")
 
-# JWT Secret Key
-JWT_SECRET_KEY = "secretkeysecretkeysecretkeysecretkeysecretkey"
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+
 
 # JWT 토큰 생성
 def generate_jwt_token(user_id):
