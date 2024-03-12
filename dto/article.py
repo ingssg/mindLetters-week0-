@@ -1,5 +1,5 @@
 class ArticleDTO:
-    def __init__(self, _id, topic, author, title, body, created_at, updated_at, deleted_at, is_blind):
+    def __init__(self, _id, topic, author, title, body, created_at, updated_at, deleted_at, is_blind, likes, comments):
         self._id = _id
         self.topic = topic
         self.author = author
@@ -9,6 +9,8 @@ class ArticleDTO:
         self.updated_at = updated_at
         self.deleted_at = deleted_at
         self.is_blind = is_blind
+        self.likes = likes
+        self.comments = comments
 
     def to_dict(self):
         return {
@@ -20,7 +22,9 @@ class ArticleDTO:
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "deleted_at": self.deleted_at,
-            "is_blind": self.is_blind
+            "is_blind": self.is_blind,
+            "likes": self.likes,
+            "comments": self.comments
         }
 
     @staticmethod
@@ -34,5 +38,7 @@ class ArticleDTO:
             created_at=data.get("created_at"),
             updated_at=data.get("updated_at"),
             deleted_at=data.get("deleted_at"),
-            is_blind=data.get("is_blind")
+            is_blind=data.get("is_blind"),
+            likes=data.get("likes"),
+            comments=data.get("comments")
         )
