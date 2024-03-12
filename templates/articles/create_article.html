@@ -24,6 +24,7 @@ crossorigin="anonymous"></script>
     margin-top: 10px;
   }
 </style>
+
 <div id="container">
   <div id="blind-container" class="form-check">
     <input id="is-blind" class="form-check-input" type="checkbox" value="" {% if type == "modify" and article.is_blind %}checked{% endif%} id="flexCheckDefault">
@@ -36,12 +37,12 @@ crossorigin="anonymous"></script>
     <span class="input-group-text" id="basic-addon1">제목</span>
     <input id="title" type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1" value="{% if type == 'modify' %}{{article.title}}{% endif%}">
   </div>
-  
+
   <div class="input-group">
     <span class="input-group-text">내용</span>
     <textarea id="content" class="form-control" aria-label="With textarea" rows="10">{% if type == 'modify' %}{{article.body}}{% endif%}</textarea>
   </div>
-  
+
   <select id="type" class="form-select" aria-label="Default select example">
     <option value="good" {% if (type == 'modify' and topic == 'good') or type=='create' %}selected{% endif%}>칭찬해요</option>
     <option value="bad" {% if (type == 'modify' and topic == 'bod') %}selected{% endif%}>싫어요</option>
@@ -75,7 +76,7 @@ crossorigin="anonymous"></script>
         }else{
             alert("서버 오류!")
         }
- 
+
       }
     })
   }
@@ -99,7 +100,7 @@ crossorigin="anonymous"></script>
         }else{
             alert("서버 오류!")
         }
- 
+
       }
     })
   }
