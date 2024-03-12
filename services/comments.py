@@ -22,7 +22,7 @@ def create_comment():
     articles_collection.update_one({'_id': ObjectId(comment.article)}, {'$addToSet': {'comments': result.inserted_id}})
 
 
-@comments_blueprint.route("/<string:id>", method=["PATCH"])
+@comments_blueprint.route("/<string:id>", methods=["PATCH"])
 def update_comment(id):
     userId = "abc"  # get author id
 
@@ -36,7 +36,7 @@ def update_comment(id):
     comments_collection.update_one(filter, {"$set": comment})
 
 
-@comments_blueprint.route("/<string:article_id>/<string:comment_id>", method=["DELETE"])
+@comments_blueprint.route("/<string:article_id>/<string:comment_id>", methods=["DELETE"])
 def remove_comment(article_id, comment_id):
     userId = "abc"  # get author id
 
