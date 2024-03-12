@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from db import articles_collection
 from dto.article import ArticleDTO
 
@@ -8,7 +8,16 @@ articles_blueprint = Blueprint("articles_blueprint", __name__, template_folder="
 
 @articles_blueprint.route("/")
 def get_all_articles():
-    list_of_articles = list(articles_collection.find())
+    topic_param = request.args.get("topic")
+
+    filter = {}
+
+    if topic_param in ["good", "bad"]:
+        filter["topic"] = topic_param
+    else:
+        topic_param = "all"
+
+    list_of_articles = list(articles_collection.find(filter))
 
     # ObjectId 를 문자열로 변환
     for article in list_of_articles:
@@ -16,7 +25,7 @@ def get_all_articles():
 
     articles_object = [ArticleDTO.from_dict(article_dict) for article_dict in list_of_articles]
 
-    return render_template('article_list.html', articles=articles_object)
+    return render_template('article_list.html', articles=articles_object, topic=topic_param)
 
 
 @articles_blueprint.route("/", methods=["POST"])
