@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import Blueprint, render_template, request
-from db import comments_collection
+from db import comments_collection, articles_collection
 from dto.comment import CommentDTO
 from bson import ObjectId
 
@@ -14,28 +14,36 @@ def create_comment():
     comment = CommentDTO.from_dict(data)
 
     comment.created_at = datetime.now
-    # 작성자 ObjectID author 에 추가
-    # article 의 comments 배열에 comment ObjectId 추가
+    # client 에서 작성자 ObjectID author 에 추가하여 보냄
 
-    comments_collection.insert_one(comment)
+    result = comments_collection.insert_one(comment)
+
+    # article 의 comments 배열에 comment ObjectId 추가
+    articles_collection.update_one({'_id': ObjectId(comment.article)}, {'$addToSet': {'comments': result.inserted_id}})
 
 
 @comments_blueprint.route("/<string:id>", method=["PATCH"])
 def update_comment(id):
+    userId = "abc"  # get author id
+
     data = request.get_json
     comment = CommentDTO.from_dict(data)
 
     comment.updated_at = datetime.now()
 
-    # filter 에 작성자가 현재 로그인한 사람인지도 추가해야 함
-    filter = {'_id': ObjectId(id)}
+    filter = {'_id': ObjectId(id), 'author': ObjectId(userId)}
 
     comments_collection.update_one(filter, {"$set": comment})
 
 
-@comments_blueprint.route("/<string:id>", method=["DELETE"])
-def remove_comment(id):
-    # filter 에 작성자가 현재 로그인한 사람인지도 추가해야 함
-    filter = {'_id': ObjectId(id)}
+@comments_blueprint.route("/<string:article_id>/<string:comment_id>", method=["DELETE"])
+def remove_comment(article_id, comment_id):
+    userId = "abc"  # get author id
 
-    comments_collection.update_one(filter, {"$set": {"deleted_at": datetime.now()}})
+    filter = {'_id': ObjectId(comment_id), 'author': ObjectId(userId)}
+
+    update_result = comments_collection.update_one(filter, {"$set": {"deleted_at": datetime.now()}})
+
+    if update_result.modified_count:
+        # article 의 comments 배열에서 comment ObjectId 삭제
+        comments_collection.update_one({'_id': article_id}, {'$pull': {'comments': article_id}})
