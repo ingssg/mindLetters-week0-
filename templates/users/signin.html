@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
 <h1>로그인 페이지 입니다.</h1>
+{% if isSignUp %}
+<p> 회원가입에 성공하였습니다. </p>
+<p> 다시 로그인 해 주세요. </p>
+{% endif %}
 <div class="field">
   <label class="label">ID</label>
   <div class="control">
@@ -19,6 +23,6 @@
   <button class="button is-primary">로그인</button>
 </div>
 <div class="control">
-  <button class="button is-primary">회원가입</button>
+  <button class="button is-primary" onclick="window.location.href='../users/signup'">회원가입</button>
 </div>
 {% endblock %}
