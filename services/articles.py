@@ -69,12 +69,16 @@ def dislike_article(id):
     filter = {'_id': ObjectId(id), 'deleted_at': None}
 
     articles_collection.update_one(filter, {'$pull': {'likes': userId}})
+    return jsonify({'result': 'success'})
 
 
 @articles_blueprint.route("/", methods=["POST"])
+@jwt_required()
 def create_article():
     # 게시물 생성 기능 구현
-    article = {'topic': request.form['topic'], 'author': request.form['author'], 'title': request.form['title'],
+    userId = get_jwt_identity()['_id']
+
+    article = {'topic': request.form['topic'], 'author': ObjectId(userId), 'title': request.form['title'],
                'body': request.form['body'],
                'is_blind': bool(request.form['is_blind']), 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
                'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
@@ -84,12 +88,15 @@ def create_article():
 
 
 @articles_blueprint.route("/<string:id>", methods=["DELETE"])
+@jwt_required()
 def remove_article():
+    userId = get_jwt_identity()['_id']
     # 게시물 삭제 기능 구현
     return
 
 
 @articles_blueprint.route("/<string:id>", methods=["PATCH"])
+@jwt_required()
 def update_article(id):
     # 게시물 수정 기능 구현
     article = {'topic': request.form['topic'], 'title': request.form['title'], 'body': request.form['body'],
@@ -100,19 +107,18 @@ def update_article(id):
 
 
 @articles_blueprint.route("/<string:id>")
+@jwt_required()
 def get_one_articles(id):
     article = articles_collection.find_one({'_id': ObjectId(id)})
     return render_template('article_detail.html', article=article)
 
 
-# 65ef8d9cf8506452fbb03c86
-# 65f00a141320c7693dbdaf7a
 @articles_blueprint.route("/new")
+@jwt_required()
 def create_article_page():
     # 게시물 작성 페이지 구현
-    # author = request.form['author']
-    author = "김철수"
-    return render_template('create_article.html', author=author, type="create")
+    userId = get_jwt_identity()['_id']
+    return render_template('create_article.html', author=userId, type="create")
 
 
 @articles_blueprint.route("/modify/<string:id>")
