@@ -34,9 +34,15 @@ def create_article():
     return
 
 
-@articles_blueprint.route("/", methods=["DELETE"])
+@articles_blueprint.route("/<string:id>", methods=["DELETE"])
 def remove_article():
     # 게시물 삭제 기능 구현
+    return
+
+
+@articles_blueprint.route("/<string:id>", methods=["PATCH"])
+def update_article():
+    # 게시물 수정 기능 구현
     return
 
 
