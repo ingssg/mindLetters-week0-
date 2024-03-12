@@ -122,7 +122,9 @@
             {% else %}
             <td>{{article.author}}</td>
             {% endif %}
-            <td id="title">{{article.title}}<span class="comment-count">({{ 0 if article.comments == None else article.comments|length }})</span>
+            <td id="title" onclick="window.location.href = `/articles/${this.parentElement.getAttribute('data-id')}`">
+                {{article.title}} <span
+                    class="comment-count">({{ 0 if article.comments == None else article.comments|length }})</span>
             </td>
             <td>{{article.created_at}}</td>
             <td style="text-align: center">
