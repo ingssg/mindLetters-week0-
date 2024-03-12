@@ -31,6 +31,34 @@
         cursor: pointer;
         background-color: lightgray;
     }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .pagination a, .pagination span {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 0 2px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .pagination a:hover {
+        background-color: #f4f4f4;
+    }
+
+    .pagination .current {
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+    }
+
 </style>
 
 <div class="table-wrapper">
@@ -90,5 +118,22 @@
         </tbody>
         {% endfor %}
     </table>
+    <div class="pagination">
+        {% if pagination['page'] > 1 %}
+        <a href="?page=1&topic={{ topic }}">&laquo;</a>
+        <a href="?page={{ pagination['page'] - 1 }}&topic={{ topic }}">&lsaquo;</a>
+        {% endif %}
+        {% for page in range(pagination['start_page'], pagination['end_page'] + 1) %}
+        {% if page == pagination['page'] %}
+        <span class="current">{{ page }}</span>
+        {% else %}
+        <a href="?page={{ page }}&topic={{ topic }}">{{ page }}</a>
+        {% endif %}
+        {% endfor %}
+        {% if pagination['page'] < pagination['end_page'] %}
+        <a href="?page={{ pagination['page'] + 1 }}&topic={{ topic }}">&rsaquo;</a>
+        <a href="?page={{ pagination['end_page'] }}&topic={{ topic }}">&raquo;</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
