@@ -65,8 +65,10 @@ def dislike_article(id):
 @articles_blueprint.route("/", methods=["POST"])
 def create_article():
     # 게시물 생성 기능 구현
-    article = {'topic': request.form['topic'], 'author': request.form['author'], 'title': request.form['title'], 'body': request.form['body'],
-               'is_blind': request.form['is_blind'], 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),'updated_at':None, 'deleted_at':None}
+    article = {'topic': request.form['topic'], 'author': request.form['author'], 'title': request.form['title'],
+               'body': request.form['body'],
+               'is_blind': request.form['is_blind'], 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
+               'updated_at': None, 'deleted_at': None}
 
     articles_collection.insert_one(article)
     return jsonify({'result': 'success'})
@@ -84,17 +86,18 @@ def update_article(id):
     article = {'topic': request.form['topic'], 'title': request.form['title'], 'body': request.form['body'],
                'is_blind': request.form['is_blind'], 'updated_at': now.strftime('%Y-%m-%d %H:%M:%S')}
 
-    articles_collection.update_one({'_id':ObjectId(id)}, {"$set": article})
+    articles_collection.update_one({'_id': ObjectId(id)}, {"$set": article})
     return jsonify({'result': 'success'})
 
 
 @articles_blueprint.route("/<string:id>")
 def get_one_articles(id):
-    article = articles_collection.find_one({'_id':ObjectId(id)})
+    article = articles_collection.find_one({'_id': ObjectId(id)})
     return render_template('article_detail.html', article=article)
 
-#65ef8d9cf8506452fbb03c86
-#65f00a141320c7693dbdaf7a
+
+# 65ef8d9cf8506452fbb03c86
+# 65f00a141320c7693dbdaf7a
 @articles_blueprint.route("/new")
 def create_article_page():
     # 게시물 작성 페이지 구현
@@ -102,8 +105,9 @@ def create_article_page():
     author = "김철수"
     return render_template('create_article.html', author=author, type="create")
 
+
 @articles_blueprint.route("/modify/<string:id>")
 def modify_article_page(id):
-    article = articles_collection.find_one({'_id':ObjectId(id)})
+    article = articles_collection.find_one({'_id': ObjectId(id)})
 
     return render_template('create_article.html', article=article, type="modify", id=id)
