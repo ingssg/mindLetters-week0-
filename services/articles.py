@@ -34,3 +34,9 @@ def remove_article():
 @articles_blueprint.route("/<string:id>")
 def get_one_articles(id):
     return render_template('article_detail.html', id=id)
+
+
+@articles_blueprint.route("/new")
+def create_article_page():
+    # 게시물 작성 페이지 구현
+    return render_template('create_article.html')
