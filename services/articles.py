@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request
 from db import articles_collection
 from dto.article import ArticleDTO
+from bson import ObjectId
 
 # html 파일이 있는 folder path 정의
 articles_blueprint = Blueprint("articles_blueprint", __name__, template_folder="../templates/articles")
@@ -38,6 +39,24 @@ def get_all_articles():
     return render_template('article_list.html', articles=articles_object, topic=topic_param,
                            pagination={"total": total, "page": page_param, "size": page_size,
                                        "start_page": start_page, "end_page": end_page})
+
+
+@articles_blueprint.route("/likes/<string:id>", methods=["POST"])
+def like_article(id):
+    userId = "abc"  # get author id
+
+    filter = {'_id': ObjectId(id), 'deleted_at': None}
+
+    articles_collection.update_one(filter, {'$addToSet': {'likes': userId}})
+
+
+@articles_blueprint.route("/likes/<string:id>", methods=["DELETE"])
+def dislike_article(id):
+    userId = "abc"  # get author id
+
+    filter = {'_id': ObjectId(id), 'deleted_at': None}
+
+    articles_collection.update_one(filter, {'$pull': {'likes': userId}})
 
 
 @articles_blueprint.route("/", methods=["POST"])
