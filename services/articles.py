@@ -10,13 +10,14 @@ articles_blueprint = Blueprint("articles_blueprint", __name__, template_folder="
 def get_all_articles():
     topic_param = request.args.get("topic")
 
-    filter = {}
+    filter = {"deleted_at": None}
 
     if topic_param in ["good", "bad"]:
         filter["topic"] = topic_param
     else:
         topic_param = "all"
 
+    # todo author 를 작성자의 ObjectId 로 설정 후, GET 요청시 lookup 해 오도록 변경
     list_of_articles = list(articles_collection.find(filter))
 
     # ObjectId 를 문자열로 변환
