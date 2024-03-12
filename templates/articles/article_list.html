@@ -119,8 +119,10 @@
         {% endfor %}
     </table>
     <div class="pagination">
-        {% if pagination['page'] > 1 %}
+        {% if pagination['page'] > 2 %}
         <a href="?page=1&topic={{ topic }}">&laquo;</a>
+        {% endif %}
+        {% if pagination['page'] > 1 %}
         <a href="?page={{ pagination['page'] - 1 }}&topic={{ topic }}">&lsaquo;</a>
         {% endif %}
         {% for page in range(pagination['start_page'], pagination['end_page'] + 1) %}
@@ -132,6 +134,8 @@
         {% endfor %}
         {% if pagination['page'] < pagination['end_page'] %}
         <a href="?page={{ pagination['page'] + 1 }}&topic={{ topic }}">&rsaquo;</a>
+        {% endif %}
+        {% if pagination['page'] < pagination['end_page'] - 1 %}
         <a href="?page={{ pagination['end_page'] }}&topic={{ topic }}">&raquo;</a>
         {% endif %}
     </div>
