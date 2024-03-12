@@ -59,6 +59,11 @@
         border: 1px solid #007bff;
     }
 
+    .comment-count {
+        font-size: 80%; /* 더 작은 글씨 크기 설정 */
+        color: #888; /* 원하는 색상으로 설정 */
+    }
+
 </style>
 
 <div class="table-wrapper">
@@ -112,7 +117,8 @@
             {% else %}
             <td>{{article.author}}</td>
             {% endif %}
-            <td>{{article.title}}</td>
+            <td>{{article.title}}<span class="comment-count">({{ 0 if article.comments == None else article.comments|length }})</span>
+            </td>
             <td>{{article.created_at}}</td>
         </tr>
         </tbody>
