@@ -69,12 +69,16 @@ def create_user():
 
     # 회원 가입 로직
     # 빈 인풋 체크
-    if not user['id'] or not request.form.get('password', '') or not user['nickname']:
+    if not user['id'] or not request.form.get('password', '') or not request.form.get('password-confirm', '') or not user['nickname']:
         return render_template('signup.html', error="모든 필드를 입력해주세요.")
     
     # 비밀번호 길이 확인
     if len(user['password']) < 8:
         return render_template('signup.html', error="비밀번호는 최소 8자 이상이어야 합니다.")
+    
+    # 비밀번호 & 비밀번호 확인 일치 여부 확인
+    if request.form['password'] != request.form['password-confirm']:
+        return render_template('signup.html', error="비밀번호와 비밀번호 확인이 일치하지 않습니다.")
 
     user['hashed_password'] = hash_password(request.form['password'], salt)
 
