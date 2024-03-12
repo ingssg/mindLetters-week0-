@@ -53,19 +53,6 @@
 </div>
 
 <script>
-    let token
-
-    const getTokenFromLocalStorage = () => localStorage.getItem('jwt_token');
-
-    const removeTokenFromLocalStorage = () => localStorage.removeItem('jwt_token');
-
-    window.onload = function () {
-        token = getTokenFromLocalStorage()
-        if (!token) {
-            window.location.href = "/users/signin"
-        }
-    };
-
     function saveComment() {
         // $.ajax({
         //   type:'POST',

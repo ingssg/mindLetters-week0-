@@ -1,8 +1,10 @@
+import jwt
 from flask import Blueprint, render_template, request, jsonify
 from db import articles_collection
 from dto.article import ArticleDTO
 from bson import ObjectId
 from datetime import datetime
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 now = datetime.now()
 
@@ -11,7 +13,10 @@ articles_blueprint = Blueprint("articles_blueprint", __name__, template_folder="
 
 
 @articles_blueprint.route("/")
+@jwt_required()
 def get_all_articles():
+    userId = get_jwt_identity()['_id']
+
     topic_param = request.args.get("topic", default="all")
     page_param = request.args.get("page", default=1, type=int)
 
@@ -41,21 +46,25 @@ def get_all_articles():
 
     return render_template('article_list.html', articles=articles_object, topic=topic_param,
                            pagination={"total": total, "page": page_param, "size": page_size,
-                                       "start_page": start_page, "end_page": end_page})
+                                       "start_page": start_page, "end_page": end_page}, userId=userId)
 
 
 @articles_blueprint.route("/likes/<string:id>", methods=["POST"])
+@jwt_required()
 def like_article(id):
-    userId = "abc"  # get author id
+    userId = get_jwt_identity()['_id']
 
     filter = {'_id': ObjectId(id), 'deleted_at': None}
 
     articles_collection.update_one(filter, {'$addToSet': {'likes': userId}})
 
+    return jsonify({'result': 'success'})
+
 
 @articles_blueprint.route("/likes/<string:id>", methods=["DELETE"])
+@jwt_required()
 def dislike_article(id):
-    userId = "abc"  # get author id
+    userId = get_jwt_identity()['_id']
 
     filter = {'_id': ObjectId(id), 'deleted_at': None}
 

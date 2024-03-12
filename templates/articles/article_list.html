@@ -81,9 +81,6 @@
         $.ajax({
             type: 'POST',
             url: `/articles/likes/${articleId}`,
-            headers: {
-                Authorization: token
-            },
             success: function (response) {
                 if (response['result'] == "success") {
                     window.location.reload()
