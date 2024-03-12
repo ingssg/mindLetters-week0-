@@ -61,7 +61,7 @@ def update_article(id):
 @articles_blueprint.route("/<string:id>")
 def get_one_articles(id):
     article = articles_collection.find_one({'_id':ObjectId(id)})
-    return render_template('article_detail.html', article=article, type="view")
+    return render_template('article_detail.html', article=article)
 
 #65ef8d9cf8506452fbb03c86
 #65f00a141320c7693dbdaf7a
@@ -70,7 +70,7 @@ def create_article_page():
     # 게시물 작성 페이지 구현
     # author = request.form['author']
     author = "김철수"
-    return render_template('create_article.html', author=author)
+    return render_template('create_article.html', author=author, type="create")
 
 @articles_blueprint.route("/modify/<string:id>")
 def modify_article_page(id):

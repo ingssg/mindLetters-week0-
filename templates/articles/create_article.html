@@ -43,11 +43,11 @@ crossorigin="anonymous"></script>
   </div>
   
   <select id="type" class="form-select" aria-label="Default select example">
-    <option value="good" {% if (type == 'modify' and topic == 'good') or type=='view' %}selected{% endif%}>칭찬해요</option>
+    <option value="good" {% if (type == 'modify' and topic == 'good') or type=='create' %}selected{% endif%}>칭찬해요</option>
     <option value="bad" {% if (type == 'modify' and topic == 'bod') %}selected{% endif%}>싫어요</option>
   </select>
 
-  {% if type == 'view' %}
+  {% if type == 'create' %}
   <button id="save_button" type="button" class="btn btn-primary btn-sm" onclick="createLetter()">작성하기</button>
   {% else %}
   <button id="save_button" type="button" class="btn btn-primary btn-sm" onclick="modifyLetter()">수정하기</button>
