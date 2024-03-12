@@ -14,7 +14,7 @@ JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 # JWT 토큰 생성
 def generate_jwt_token(user_id):
     payload = {
-        '_id': user_id,
+        '_id': str(user_id),
         'exp': datetime.utcnow() + timedelta(minutes=30)
     }
     token = jwt.encode(payload, JWT_SECRET_KEY, algorithm='HS256')
