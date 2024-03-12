@@ -78,7 +78,9 @@
 
     window.onload = function () {
         token = getTokenFromLocalStorage()
-        console.log(token)
+        if (!token) {
+            window.location.href = "/users/signin"
+        }
     };
 </script>
 

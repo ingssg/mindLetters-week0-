@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <style>
-    dt, dd , h6{
+    dt, dd, h6 {
         display: inline;
     }
 
@@ -12,23 +12,25 @@
     }
 
     #info {
-      display: inline;
-      float: right;
+        display: inline;
+        float: right;
     }
 
 </style>
+
+
 <div id="container">
     <h6>{% if article.topic=="good" %}칭찬해요{% else %}싫어요{% endif %}</h6>
 
     <dl id="info">
-      <dt>작성자 :</dt>
-      {% if article.is_blind %}
-      <dd>익명</dd>
-      {% else %}
-      <dd>{{article.author}}</dd>
-      {% endif %}
-      <dt>생성일 :</dt>
-      <dd>{{article.created_at}}</dd>
+        <dt>작성자 :</dt>
+        {% if article.is_blind %}
+        <dd>익명</dd>
+        {% else %}
+        <dd>{{article.author}}</dd>
+        {% endif %}
+        <dt>생성일 :</dt>
+        <dd>{{article.created_at}}</dd>
     </dl>
 
     <div class="input-group mb-3">
@@ -44,29 +46,42 @@
     <br>
 
     <div class="input-group mb-3">
-      <textarea class="form-control" aria-label="With textarea" rows="1">{{article}}</textarea>
-      <button class="btn btn-outline-secondary" type="button" id="button-addon2">입력</button>
+        <textarea class="form-control" aria-label="With textarea" rows="1">{{article}}</textarea>
+        <button class="btn btn-outline-secondary" type="button" id="button-addon2">입력</button>
     </div>
 
-  </div>
+</div>
 
 <script>
-  function saveComment() {
-    // $.ajax({
-    //   type:'POST',
-    //   url: "/comments",
-    //   data: {author, is_blind, title, body, topic},
-    //   success: function(response) {
-    //     if(response['result'] == "success") {
-    //         alert("등록 완료!");
-    //         window.location.href = '/articles'
-    //     }else{
-    //         alert("서버 오류!")
-    //     }
- 
-    //   }
-    // })
+    let token
 
-  }
+    const getTokenFromLocalStorage = () => localStorage.getItem('jwt_token');
+
+    const removeTokenFromLocalStorage = () => localStorage.removeItem('jwt_token');
+
+    window.onload = function () {
+        token = getTokenFromLocalStorage()
+        if (!token) {
+            window.location.href = "/users/signin"
+        }
+    };
+
+    function saveComment() {
+        // $.ajax({
+        //   type:'POST',
+        //   url: "/comments",
+        //   data: {author, is_blind, title, body, topic},
+        //   success: function(response) {
+        //     if(response['result'] == "success") {
+        //         alert("등록 완료!");
+        //         window.location.href = '/articles'
+        //     }else{
+        //         alert("서버 오류!")
+        //     }
+
+        //   }
+        // })
+
+    }
 </script>
 {% endblock %}
