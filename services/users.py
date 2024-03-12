@@ -44,8 +44,6 @@ def signin_user():
     'password': request.form.get('password', ''),
     }
 
-    print(user['id'] + '====' + user['password'])
-
     # 빈 인풋 체크
     if not user['id'] or not user['password']:
         return render_template('signin.html', error="모든 필드를 입력해주세요.")
@@ -55,14 +53,15 @@ def signin_user():
     if not user_info:
         return render_template('signin.html', error="존재하지 않는 아이디입니다.")
 
-    print(user['password'] + '====' + user_info['hashed_password'])
     if(hash_password(user['password'], user_info['salt']) != user_info['hashed_password']):
         return render_template('signin.html', error="비밀번호가 일치하지 않습니다.")
 
     # JWT 토큰 생성
-    jwt_token = generate_jwt_token(user['_id'])
+    _id = str(user_info['_id']) 
+    jwt_token = generate_jwt_token(_id)
 
-    return render_template('articles/article_list.html', jwt_token=jwt_token)
+    print(1212)
+    return render_template('signin.html', jwt_token=jwt_token)
 
 @users_blueprint.route("/signup")
 def signup():
