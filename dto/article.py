@@ -20,7 +20,7 @@ class ArticleDTO:
     @staticmethod
     def from_dict(data):
         return ArticleDTO(
-            _id=data.get("id"),
+            _id=data.get("_id"),
             topic=data.get("topic"),
             author=data.get("author"),
             title=data.get("title"),
