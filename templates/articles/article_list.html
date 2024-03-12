@@ -69,6 +69,24 @@
 
 </style>
 
+<script>
+    const saveTokenToLocalStorage = (token) => localStorage.setItem('jwt_token', token);
+
+    const getTokenFromLocalStorage = () => localStorage.getItem('jwt_token');
+
+    const removeTokenFromLocalStorage = () => localStorage.removeItem('jwt_token');
+
+    window.onload = function() {
+        const jwtToken = "{{jwt_token}}";
+        if(jwtToken) {
+            saveTokenToLocalStorage(jwtToken);
+        }
+
+
+    };
+
+</script>
+
 <div class="table-wrapper">
     <div class="btn-wrapper">
         <label style="font-size: 18px;">주제:
