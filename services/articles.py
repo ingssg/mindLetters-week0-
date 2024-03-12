@@ -16,7 +16,7 @@ def get_all_articles():
     if topic_param in ["good", "bad"]:
         filter["topic"] = topic_param
 
-    page_size = 3
+    page_size = 6
     skip = (page_param - 1) * page_size
     limit = page_size
 
