@@ -143,10 +143,41 @@ def update_article(id):
 @articles_blueprint.route("/<string:id>")
 @jwt_required()
 def get_one_articles(id):
-    # author = request.args.get("author")
-    author = "commentUser"
-    article = articles_collection.find_one({'_id': ObjectId(id)})
-    return render_template('article_detail.html', article=article, author=author)
+    userId = get_jwt_identity()['_id']
+
+    pipeline = [
+        {
+            "$match": {
+                "deleted_at": None,
+                "_id": ObjectId(id)
+            }
+        }, {
+            "$lookup": {
+                "from": "users",
+                "localField": "author",
+                "foreignField": "_id",
+                "as": "author"
+            }
+        }, {
+            "$unwind": "$author"
+        }, {
+            "$project": {
+                "topic": 1,
+                "title": 1,
+                "created_at": 1,
+                "likes": 1,
+                "comments": 1,
+                "is_blind": 1,
+                "body": 1,
+                "author.nickname": 1,
+                "author._id": 1,
+            }
+        }
+    ]
+
+    article = list(articles_collection.aggregate(pipeline))[0]
+
+    return render_template('article_detail.html', article=article, userId=userId)
 
 
 @articles_blueprint.route("/new")
