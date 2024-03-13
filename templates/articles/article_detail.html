@@ -47,7 +47,7 @@
     {% if article.is_blind %}
     <dd>익명,</dd>
     {% else %}
-    <dd>{{article.author}},</dd>
+    <dd>{{article.author.nickname}}</dd>
     {% endif %}
     <dt>생성일 :</dt>
     <dd>{{article.created_at}}</dd>
@@ -115,59 +115,33 @@
           </div>
         </li> -->
       </ul>
-    
+
   </div>
 
 </div>
 
 <script>
-  $(document).ready(function () {
-    makeCommentList()
-  })
 
-  function makeCommentList() {
-    // comment list 불러오기
+  const article = "{{article._id}}";
 
-    // temp list
-    let commentList = [
-          {"_id": 0,
-            "article": 1,
-            "author": "name",
-            "body": "comment...",
-            "created_at": "2024-11-11 00:00:00",
-            "updated_at": null,
-            "deleted_at": null,
-            "is_blind": true,
+  function getComments() {
+      $.ajax({
+          type: "GET",
+          url: `/comments/${article}`,
+          success: function (response) {
+              if (response["result"] == "success") {
+                  console.log(response["comments"])
+              } else {
+                  alert("서버 오류!");
+              }
           },
-          {"_id": 0,
-            "article": 1,
-            "author": "name",
-            "body": "comment...",
-            "created_at": "2024-11-11 00:00:00",
-            "updated_at": null,
-            "deleted_at": null,
-            "is_blind": true,
-          },
-          {"_id": 0,
-            "article": 1,
-            "author": "name",
-            "body": "comment...",
-            "created_at": "2024-11-11 00:00:00",
-            "updated_at": null,
-            "deleted_at": null,
-            "is_blind": true,
-          },
-        ]
-
-    for(let i=0;i<commentList.length;i++) {
-      const comment = commentList[i]
-      makeComment(i+1, comment._id, comment.author, comment.created_at, comment.body)
-    }
-    
+      });
   }
-  
+
+
+
   function makeComment(index, id, author, date, comment) {
-    let temp_html = 
+    let temp_html =
     `<li id="comment-${index}" class="list-group-item">
       <div class="justify-content-between d-flex">
         <div>${author}</div>
@@ -187,21 +161,16 @@
   }
 
   function saveComment() {
-    console.log("article", "{{article._id}}");
-    let article = "{{article._id}}";
-    let author = "{{author}}";
     let body = $("#comment").val();
     let is_blind = $('#is-blind').is(':checked');
     $.ajax({
       type: "POST",
-      url: "/comments",
+      url: `/comments/${article}`,
       headers: {
         "Content-type": "application/json",
-        // Accept: "application/json",
       },
       data: JSON.stringify({
         article,
-        author,
         body,
         updated_at: null,
         deleted_at: null,
