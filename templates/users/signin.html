@@ -79,10 +79,12 @@
 </div>
 <script>
 
+    //토큰이 만료된 경우
     if('{{isExpired}}') {
       alert("로그인 정보가 만료되었습니다. 다시 로그인 해주세요.");
     }
 
+    // 토큰이 없는데 아티클 접속 시도한 경우
     if('{{hasNoToken}}') {
       alert("먼저 로그인을 해주세요.");
     }
@@ -90,6 +92,17 @@
     $(document).ready(function () {
         $('#loginForm').submit(function (e) {
             e.preventDefault();
+
+            // 유효한 토큰이 있는데 로그인 시도 시 로그아웃 
+            $.ajax({
+                type: 'POST',
+                url: '/users/logout',
+                success: function(response) {},
+                error: function(xhr, status, error) {
+                    // 에러 처리
+                    console.error('에러:', error);
+                }
+            });
 
             const formData = {
                 'id': $('#id').val(),
