@@ -161,7 +161,7 @@
             {% if (article.is_blind == True) %}
             <td>익명</td>
             {% else %}
-            <td>{{article.author}}</td>
+            <td>{{article.author.nickname}}</td>
             {% endif %}
             <td id="title" onclick="window.location.href = `/articles/${this.parentElement.getAttribute('data-id')}`">
                 {{article.title}} <span

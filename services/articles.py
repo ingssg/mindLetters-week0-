@@ -31,8 +31,42 @@ def get_all_articles():
 
     total = articles_collection.count_documents(filter)
 
+    pipeline = [
+        {
+            "$match": {
+                "deleted_at": None
+            }
+        }, {
+            "$sort": {"_id": -1}
+        }, {
+            "$skip": skip
+        }, {
+            "$limit": limit
+        },
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "author",
+                "foreignField": "_id",
+                "as": "author"
+            }
+        }, {
+            "$unwind": "$author"
+        }, {
+            "$project": {
+                "topic": 1,
+                "title": 1,
+                "created_at": 1,
+                "likes": 1,
+                "comments": 1,
+                "is_blind": 1,
+                "author.nickname": 1,
+                "author._id": 1,
+            }
+        }
+    ]
     # todo author 를 작성자의 ObjectId 로 설정 후, GET 요청시 lookup 해 오도록 변경
-    list_of_articles = list(articles_collection.find(filter).sort({'_id': -1}).skip(skip).limit(limit))
+    list_of_articles = list(articles_collection.aggregate(pipeline))
 
     # ObjectId 를 문자열로 변환
     for article in list_of_articles:
