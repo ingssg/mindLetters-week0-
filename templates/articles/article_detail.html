@@ -8,8 +8,13 @@
 <style>
   dt,
   dd,
-  h6 {
+  h6,
+  p {
     display: inline;
+  }
+
+  ul {
+    overflow-x: scroll;
   }
 
   .delete-button {
@@ -30,55 +35,60 @@
     float: right;
   }
 
-  #commentContainer {
+  #comment-container {
+    padding: 20px;
+  }
+
+  #letter-container {
     padding: 20px;
   }
 
   #comment-list {
     border-top: none;
+    max-height: 200px;
+  }
+
+  #content {
+    min-height: 200px;
+    margin-bottom: 20px;
+  }
+
+  #topic {
+    font-size: larger;
+    font-weight: bold;
+    margin-bottom: 10px;
   }
 </style>
 <div id="container">
-  <h6>{% if article.topic=="good" %}칭찬해요{% else %}싫어요{% endif %}</h6>
-  <dl id="info">
-    <dt>공감 : </dt>
-    <dd>{{article.likes|length}}, </dd>
-    <dt>작성자 :</dt>
-    {% if article.is_blind %}
-    <dd>익명,</dd>
-    {% else %}
-    <dd>{{article.author.nickname}}</dd>
-    {% endif %}
-    <dt>생성일 :</dt>
-    <dd>{{article.created_at}}</dd>
-  </dl>
+  <div id="topic">{% if article.topic=="good" %}칭찬해요<p>😊</p>{% else %}싫어요😡{% endif %}</div>
 
-  <div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">제목</span>
-    <input
-      type="text"
-      class="form-control"
-      aria-label="Username"
-      aria-describedby="basic-addon1"
-      value="{{article.title}}"
-      disabled
-    />
-  </div>
+  <div id="letter-container" class="card">
+  
+    <div id="title"class="input-group mb-3">
+      {{article.title}}
+    </div>
+  
+    <div id="content" class="input-group">
+      {{article.body}}
+    </div>
 
-  <div class="input-group">
-    <span class="input-group-text">내용</span>
-    <textarea
-      class="form-control"
-      aria-label="With textarea"
-      rows="10"
-      disabled
-    >
-{{article.body}}</textarea
-    >
+    <dl id="info">
+      <dt>공감 : </dt>
+      <dd>{{article.likes|length}}, </dd>
+      <dt>작성자 :</dt>
+      {% if article.is_blind %}
+      <dd>익명,</dd>
+      {% else %}
+      <dd>{{article.author.nickname}},</dd>
+      {% endif %}
+      <dt>생성일 :</dt>
+      <dd>{{article.created_at}}</dd>
+    </dl>
+  
   </div>
   <br />
 
-  <div id="commentContainer" class="card">
+  <div id="comment-container" class="card">
 
     <div id="blind-container" class="form-check">
       <input id="is-blind" class="form-check-input" type="checkbox" value=""
