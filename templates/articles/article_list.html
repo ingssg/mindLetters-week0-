@@ -69,6 +69,19 @@
 
 </style>
 
+<script>
+    let token
+
+    const getTokenFromLocalStorage = () => localStorage.getItem('jwt_token');
+
+    const removeTokenFromLocalStorage = () => localStorage.removeItem('jwt_token');
+
+    window.onload = function () {
+        token = getTokenFromLocalStorage()
+        console.log(token)
+    };
+</script>
+
 <div class="table-wrapper">
     <div class="btn-wrapper">
         <label style="font-size: 18px;">주제:
