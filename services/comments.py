@@ -89,10 +89,12 @@ def update_comment(id):
 def remove_comment(article_id, comment_id):
     userId = get_jwt_identity()['_id']
 
-    filter = {'_id': ObjectId(comment_id), 'author': ObjectId(userId)}
+    filter = {'deleted_at': None, '_id': ObjectId(comment_id), 'author': ObjectId(userId)}
 
     update_result = comments_collection.update_one(filter, {"$set": {"deleted_at": datetime.now()}})
 
     if update_result.modified_count:
         # article 의 comments 배열에서 comment ObjectId 삭제
-        comments_collection.update_one({'_id': ObjectId(article_id)}, {'$pull': {'comments': article_id}})
+        articles_collection.update_one({'_id': ObjectId(article_id)}, {'$pull': {'comments': ObjectId(comment_id)}})
+
+    return jsonify({'result': 'success'})
