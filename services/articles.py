@@ -121,7 +121,7 @@ def create_article():
     return jsonify({'result': 'success'})
 
 
-@articles_blueprint.route("/<string:id>", methods=["DELETE"])
+@articles_blueprint.route("/<string:article_id>", methods=["DELETE"])
 @jwt_required()
 def remove_article(article_id):
     userId = get_jwt_identity()['_id']
