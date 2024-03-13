@@ -24,10 +24,18 @@
     padding: 0;
   }
 
+  .delete-button:hover {
+    color: red;
+    background-color: white;
+    text-decoration: underline;
+  }
+
   #container {
-    width: 50%;
-    margin: auto;
-    margin-top: 5%;
+    background-color: #e0f7fa;
+    border-radius: 20px;
+    padding: 30px 30px 50px;
+    width: 60vw;
+    margin: 0 auto;
   }
 
   #info {
@@ -44,7 +52,9 @@
   }
 
   #comment-list {
+    margin-top: 20px;
     border-top: none;
+    border-radius: 10px;
     max-height: 200px;
   }
 
@@ -54,7 +64,7 @@
   }
 
   #topic {
-    font-size: larger;
+    font-size: 30px;
     font-weight: bold;
     margin-bottom: 10px;
   }
@@ -63,11 +73,90 @@
     float: right;
     border: none;
     background: none;
+    text-decoration: underline;
+    margin-top: 5px;
   }
+
+  .logo-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+      margin-bottom: 50px;
+  }
+
+  #logo {
+      margin-top: 40px;
+  }
+
+  .title {
+      margin-left: 10%;
+  }
+
+  .logout-button {
+      margin-bottom: 15px;
+      margin-right: 10%;
+  }
+
+  #button-addon2 {
+    margin-left: 10px;
+    background-color: #007bff;
+    color: white;
+  }
+  
+  #blind-container {
+    margin-bottom: 5px;
+  }
+
+  .card {
+    border-radius: 10px;
+  }
+
+  #title{
+    font-size: 25px;
+    font-weight: bolder;
+    border-bottom: 1px solid rgb(188, 188, 188);
+  }
+  
+  #info dd{
+    margin-right: 5px;
+  }
+
+  .pink {
+      color: rgb(246, 114, 136);
+  }
+
+  .blue {
+      color: rgb(55, 124, 209);
+  }
+
+  .nickname {
+    font-weight: bolder;
+    font-size: 18px;
+  }
+
+  .list-group-item {
+    border-radius: inherit;
+  }
+
 </style>
+
+<div class="logo-wrapper">
+  <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+      <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
+  </a>
+  <button type="button" class="btn btn-primary logout-button" onclick="window.location.href = `/users/signin`">로그아웃</button>
+</div>
+
 <div id="container">
   <div class="d-flex justify-content-between">
-    <div id="topic">{% if article.topic=="good" %}칭찬해요<p>😊</p>{% else %}싫어요😡{% endif %}</div>
+    <div id="topic">
+      {% if article.topic=="good" %}
+        <p class="pink">칭찬해요 😊</p>
+      {% else %}
+        <p class="blue">싫어요😡</p>
+      {% endif %}
+    </div>
   </div>
 
   <div id="letter-container" class="card">
@@ -82,12 +171,12 @@
 
     <dl id="info">
       <dt>공감 : </dt>
-      <dd>{{article.likes|length}}, </dd>
+      <dd>{{article.likes|length}}  </dd>
       <dt>작성자 :</dt>
       {% if article.is_blind %}
-      <dd>익명,</dd>
+      <dd>익명</dd>
       {% else %}
-      <dd>{{article.author.nickname}},</dd>
+      <dd>{{article.author.nickname}} </dd>
       {% endif %}
       <dt>생성일 :</dt>
       <dd>{{article.created_at}}</dd>
@@ -175,7 +264,7 @@
     let temp_html =
     `<li id="comment-${index}" class="list-group-item">
       <div class="justify-content-between d-flex">
-        <div>${is_blind ? "익명" : author.nickname}</div>
+        <div class="nickname">${is_blind ? "익명" : author.nickname}</div>
         <div>${date}</div>
       </div>
       <div class="justify-content-between d-flex">
