@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,26 +8,55 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
+        @font-face {
+            font-family: 'YEONGJUSeonbiTTF';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2403@1.0/YEONGJUSeonbiTTF.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
         /* CSS 스타일 시트에 헤더 컴포넌트의 스타일을 지정합니다. */
-        header {
-            width: 100%;
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-            margin: 0;
+
+        html {
+            box-sizing: border-box;
         }
 
         body {
             margin: 0;
+            height: 100%;
         }
+
+        .main-container {
+            background-color: #F0F6FF;
+            height: 100vh; 
+        }
+
+        .title{
+            margin-left: 70px;
+            font-family: 'YEONGJUSeonbiTTF';
+            color: #6d6afe;
+        }
+
+        .title:hover {
+            text-decoration: none;
+            color: #6d6afe;
+        }
+
+        #logo {
+            margin-bottom: 0;
+        }
+
+        .mindletter {
+            position: relative;
+            bottom: 30px;
+            width: 70px;
+        }
+
     </style>
 </head>
 <body>
-<header>
-    <h1>Mind Letter</h1>
-</header>
+<div class="main-container">
 {% block content %}
 {% endblock %}
+</div>
 </body>
 </html>
