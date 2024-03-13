@@ -9,18 +9,63 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 comments_blueprint = Blueprint("comments_blueprint", __name__)
 
 
-@comments_blueprint.route("/", methods=["POST"])
-def create_comment():
+@comments_blueprint.route("/<string:article_id>")
+@jwt_required()
+def find_comments_by_article(article_id):
+    pipeline = [
+        {
+            "$match": {
+                "deleted_at": None,
+                "article": ObjectId(article_id)
+            }
+        }, {
+            "$sort": {"_id": -1}
+        }, {
+            "$lookup": {
+                "from": "users",
+                "localField": "author",
+                "foreignField": "_id",
+                "as": "author"
+            }
+        }, {
+            "$unwind": "$author"
+        }, {
+            "$project": {
+                "body": 1,
+                "is_blind": 1,
+                "author.nickname": 1,
+                "author._id": 1,
+                "created_at": 1,
 
+            }
+        }
+    ]
+
+    list_of_comments = list(comments_collection.aggregate(pipeline))
+
+    for comment in list_of_comments:
+        print(comment)
+        comment["_id"] = str(comment["_id"])
+        comment["author"]["_id"] = str(comment["author"]['_id'])
+
+    return jsonify({'result': 'success', 'comments': list_of_comments})
+
+
+@comments_blueprint.route("/<string:article_id>", methods=["POST"])
+@jwt_required()
+def create_comment(article_id):
+    userId = get_jwt_identity()['_id']
     comment = request.get_json()
 
     comment["created_at"] = datetime.now()
-    # client 에서 작성자 ObjectID author 에 추가하여 보냄
+    comment["author"] = ObjectId(userId)
+    comment["article"] = ObjectId(article_id)
 
     result = comments_collection.insert_one(comment)
 
     # article 의 comments 배열에 comment ObjectId 추가
-    articles_collection.update_one({'_id': ObjectId(comment["article"])}, {'$addToSet': {'comments': result.inserted_id}})
+    articles_collection.update_one({'_id': comment["article"]},
+                                   {'$addToSet': {'comments': result.inserted_id}})
     return jsonify({'result': 'success'})
 
 

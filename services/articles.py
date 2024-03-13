@@ -20,7 +20,9 @@ def get_all_articles():
     topic_param = request.args.get("topic", default="all")
     page_param = request.args.get("page", default=1, type=int)
 
-    filter = {"deleted_at": None}
+    filter = {
+        "deleted_at": None,
+    }
 
     if topic_param in ["good", "bad"]:
         filter["topic"] = topic_param
@@ -33,9 +35,7 @@ def get_all_articles():
 
     pipeline = [
         {
-            "$match": {
-                "deleted_at": None
-            }
+            "$match": filter
         }, {
             "$sort": {"_id": -1}
         }, {
@@ -65,7 +65,7 @@ def get_all_articles():
             }
         }
     ]
-    # todo author 를 작성자의 ObjectId 로 설정 후, GET 요청시 lookup 해 오도록 변경
+
     list_of_articles = list(articles_collection.aggregate(pipeline))
 
     # ObjectId 를 문자열로 변환
@@ -114,7 +114,7 @@ def create_article():
 
     article = {'topic': request.form['topic'], 'author': ObjectId(userId), 'title': request.form['title'],
                'body': request.form['body'],
-               'is_blind': request.form['is_blind']=="true", 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
+               'is_blind': request.form['is_blind'] == "true", 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
                'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
 
     return jsonify({'result': 'success'})
