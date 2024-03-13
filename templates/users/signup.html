@@ -35,17 +35,21 @@
     border: 0;
     border-radius: 10px;
   }
+
+  .signup-button:focus {
+    outline: none;
+  }
+
+  .signup-button:hover {
+    background-color: rgba(35, 173, 215, 0.848)
+  }
+
 </style>
 <div class="form-wrapper">
-  {% if error %}
-  <div class="error-message">
-    {{ error }}
-  </div>
-  {% endif %}
-  <div class="title">
-    <a href="{{ url_for('users_blueprint.signin') }}">마음의 편지</a>
-  </div>
-  <form method="post" class="signup-form">
+  <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+    <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
+  </a>
+  <form class="signup-form">
     <div class="input-container">
       <label class="label" for="id">아이디</label>
       <input class="input" id="id" type="text" name="id" placeholder="ID를 입력하세요.">
@@ -70,4 +74,61 @@
     <button class="signup-button">회원가입</button>
   </form>
 </div>
+
+<script>
+  $(document).ready(function () {
+    $('.signup-form').submit(function (e) {
+      e.preventDefault(); 
+
+      const id = $('#id').val().trim();
+      const password = $('#password').val().trim();
+      const passwordConfirm = $('#password-confirm').val().trim();
+      const nickname = $('#nickname').val().trim();
+
+      // 입력 필드가 비어 있는지 확인
+      if (!id || !password || !passwordConfirm || !nickname) {
+        alert('모든 필드를 입력하세요.');
+        return;
+      }
+
+      // 비밀번호 길이 확인
+      if(password.length < 8) {
+        alert('8자 이상의 비밀번호를 입력해주세요.')
+        return;
+      }
+
+      // 비밀번호와 비밀번호 확인이 일치하는지 확인
+      if (password !== passwordConfirm) {
+        alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+        return;
+      }
+
+      const formData = {
+        'id': id,
+        'password': password,
+        'nickname': nickname,        
+      }
+
+      $.ajax({
+                type: 'POST',
+                url: '/users/signup',
+                data: formData,
+                success: function (response) {
+                    window.location.href = "/users/signin"
+                    alert("회원가입에 성공하였습니다. 다시 로그인 해 주세요.")
+                },
+                error: function (xhr, status, error) {
+                    const errorMessage = JSON.parse(xhr.responseText).error;
+                    if(errorMessage) {
+                      alert(errorMessage);
+                    } else {
+                      console.error('에러', error);
+                    } 
+                }
+            });
+    });
+  });
+</script>
+
+
 {% endblock %}

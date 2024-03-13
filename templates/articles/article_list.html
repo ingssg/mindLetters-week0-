@@ -2,12 +2,22 @@
 {% block content %}
 <h1></h1>
 <style>
-    table {
-        margin-left: 20px;
-        width: 70%;
+    .logo-wrapper {
+      width: 100%;
     }
 
-    table thead tr {
+    #logo {
+        position: relative;
+        top: 30px;
+        margin-left: 15px;
+    }
+
+    table {
+        margin-left: 20px;
+        width: 100%;
+    }
+
+    table thead tr > th{
         text-align: center;
     }
 
@@ -17,10 +27,13 @@
         align-items: center;
         margin-bottom: 20px;
         flex-direction: column;
+        width: 80vw;
+        margin: 0 auto;
     }
 
     .btn-wrapper {
-        width: 80%;
+        width: 100%;
+        margin-top: 50px;
         margin-bottom: 10px;
         display: flex;
         justify-content: space-between;
@@ -67,6 +80,8 @@
         color: #888; /* 원하는 색상으로 설정 */
     }
 
+
+
 </style>
 
 <script>
@@ -83,6 +98,11 @@
 </script>
 
 <div class="table-wrapper">
+  <div class="logo-wrapper">
+    <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+      <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
+    </a>
+  </div>
     <div class="btn-wrapper">
         <label style="font-size: 18px;">주제:
             <select name="topic" id="topicSelect" onchange="window.location.href = `/articles?topic=${this.value}`">
@@ -105,7 +125,7 @@
         </label>
         <button type="button" class="btn btn-primary" onclick="window.location.href = `/articles/new`">작성하기</button>
     </div>
-    <table border="1" class="table table-bordered" style="width: 80%;">
+    <table class="table table-bordered">
         <colgroup>
             <col width="13%">
             <col width="13%">
@@ -114,7 +134,7 @@
             <col width="7%">
         </colgroup>
         <thead class="thead-dark">
-        <tr>
+        <tr class="table-top">
             <th>주제</th>
             <th>작성자</th>
             <th>제목</th>

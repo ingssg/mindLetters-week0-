@@ -47,17 +47,13 @@ def signin_user():
         'password': request.form.get('password', ''),
     }
 
-    # 빈 인풋 체크
-    if not user['id'] or not user['password']:
-        return render_template('signin.html', error="모든 필드를 입력해주세요.")
-
     user_info = users_collection.find_one({"id": user['id']})
 
     if not user_info:
-        return render_template('signin.html', error="존재하지 않는 아이디입니다.")
+        return jsonify({"error": "존재하지 않는 아이디입니다."}), 401
 
     if(hash_password(user['password'], user_info['salt']) != user_info['hashed_password']):
-        return render_template('signin.html', error="비밀번호가 일치하지 않습니다.")
+        return jsonify({"error": "비밀번호가 일치하지 않습니다."}), 401
 
     # JWT 토큰 생성
     jwt_token = generate_jwt_token(user_info['_id'])
@@ -72,7 +68,6 @@ def signup():
 @users_blueprint.route("/signup", methods=["POST"])
 def create_user():
     # 회원 가입 기능 구현
-    isSignUp = False
     salt = generate_salt()
 
     user = {
@@ -83,37 +78,21 @@ def create_user():
         'createdAt': datetime.now(),
     }
 
-    # 회원 가입 로직
-    # 빈 인풋 체크
-    if not user['id'] or not request.form.get('password', '') or not request.form.get('password-confirm', '') or not \
-            user['nickname']:
-        return render_template('signup.html', error="모든 필드를 입력해주세요.")
-
-    # 비밀번호 길이 확인
-    if len(request.form['password']) < 8:
-        return render_template('signup.html', error="비밀번호는 최소 8자 이상이어야 합니다.")
-
-    # 비밀번호 & 비밀번호 확인 일치 여부 확인
-    if request.form['password'] != request.form['password-confirm']:
-        return render_template('signup.html', error="비밀번호와 비밀번호 확인이 일치하지 않습니다.")
-    
     # 중복검사 
 
     # 아이디 중복 검사
     sameID_user_info = users_collection.find_one({"id": user['id']})
     if sameID_user_info:
-        return render_template('signup.html', error="이미 존재하는 아이디입니다.")
+        return jsonify({"error": "이미 존재하는 아이디입니다."}), 409
     
     # 닉네임 중복 검사
     sameNickname_user_info = users_collection.find_one({"nickname": user['nickname']})
     if sameNickname_user_info:
-        return render_template('signup.html', error="이미 존재하는 닉네임입니다.")
+        return jsonify({"error": "이미 존재하는 닉네임입니다."}), 409
 
     user['hashed_password'] = hash_password(request.form['password'], salt)
 
-    isSignUp = True
-    print(user)
     # DB에 유저 정보 추가
     users_collection.insert_one(user)
 
-    return render_template('signin.html', isSignUp=isSignUp)
+    return render_template('signin.html')
