@@ -1,8 +1,44 @@
 from flask import Blueprint, render_template, request, jsonify
-from db import articles_collection
+from db import articles_collection, users_collection
 from dto.article import ArticleDTO
 from bson import ObjectId
 from datetime import datetime
+from functools import wraps
+import jwt
+import os
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if "Authorization" in request.headers:
+            token = request.headers["Authorization"]
+        if not token:
+            return {
+                "message": "Authentication Token is missing!",
+                "data": None,
+                "error": "Unauthorized"
+            }, 401
+        try:
+            data=jwt.decode(token, os.getenv("JWT_SECRET_KEY"), algorithms=["HS256"])
+            current_user=users_collection.find_one({"_id": data['_id']})
+            if current_user is None:
+                return {
+                "message": "Invalid Authentication token!",
+                "data": None,
+                "error": "Unauthorized"
+            }, 401
+        except Exception as e:  # 예외 처리
+            return {  # 오류 응답을 반환합니다.
+                "message": "Something went wrong",  # 오류 메시지를 설정합니다.
+                "data": None,  # 데이터 부분을 비웁니다.
+                "error": str(e)  # 예외 메시지를 문자열로 변환하여 설정합니다.
+            }, 500
+        
+        return f(current_user, *args, **kwargs)
+    
+    return decorated
+
 
 now = datetime.now()
 
@@ -99,6 +135,7 @@ def get_one_articles(id):
 # 65ef8d9cf8506452fbb03c86
 # 65f00a141320c7693dbdaf7a
 @articles_blueprint.route("/new")
+@token_required
 def create_article_page():
     # 게시물 작성 페이지 구현
     # author = request.form['author']

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +20,12 @@
 
         body {
             margin: 0;
+            height: 100%;
+        }
+
+        .main-container {
+            background-color: #F0F6FF;
+            height: 100vh; 
         }
     </style>
 </head>
@@ -27,7 +33,9 @@
 <header>
     <h1>Mind Letter</h1>
 </header>
+<div class="main-container">
 {% block content %}
 {% endblock %}
+</div>
 </body>
 </html>

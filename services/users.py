@@ -96,6 +96,18 @@ def create_user():
     # 비밀번호 & 비밀번호 확인 일치 여부 확인
     if request.form['password'] != request.form['password-confirm']:
         return render_template('signup.html', error="비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+    
+    # 중복검사 
+
+    # 아이디 중복 검사
+    sameID_user_info = users_collection.find_one({"id": user['id']})
+    if sameID_user_info:
+        return render_template('signup.html', error="이미 존재하는 아이디입니다.")
+    
+    # 닉네임 중복 검사
+    sameNickname_user_info = users_collection.find_one({"nickname": user['nickname']})
+    if sameNickname_user_info:
+        return render_template('signup.html', error="이미 존재하는 닉네임입니다.")
 
     user['hashed_password'] = hash_password(request.form['password'], salt)
 
