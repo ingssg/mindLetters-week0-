@@ -27,7 +27,7 @@ app.register_blueprint(comments_blueprint, url_prefix='/comments')
 
 @app.route("/")
 def home():
-    return "Hello, World!"
+    return redirect(url_for('users_blueprint.signin'))
 
 
 # 토큰이 만료된 경우
