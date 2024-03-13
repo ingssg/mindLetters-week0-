@@ -2,18 +2,21 @@
 {% block content %}
 <style>
     .logo-wrapper {
-      width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        width: 100%;
     }
 
     #logo {
-        position: relative;
-        top: 30px;
-        margin-left: 15px;
+        margin-top: 40px;
     }
 
     .card-container {
+        margin-top: 50px;
         padding: 20px;
         background-color: #e0f7fa;
+        border-radius: 20px;
     }
 
     .btn-wrapper {
@@ -22,9 +25,9 @@
         align-items: center;
         margin-bottom: 20px; /* 우측 여백 추가 */
         /* 상하 여백 추가 */
-        padding: 10px 0 10px 10%;
+        padding: 10px 55px;
         border-radius: 10px; /* 모서리 둥글게 */
-        width: 90%; /* 가로 길이를 현재의 80%로 설정 */
+        width: 100%; /* 가로 길이를 현재의 80%로 설정 */
     }
 
     .btn-like {
@@ -40,15 +43,14 @@
     }
 
     .btn-like:hover {
-        background-color: #87bfff;
-        color: #000000;
+        background-color: #76b7f8;
+        color: #ffffff;
     }
 
     .btn-edit, .btn-delete {
         background-color: #f8d7da;
         color: #721c24;
         border: none;
-        margin-left: 10px;
     }
 
     .btn-edit {
@@ -77,17 +79,29 @@
 
     .card-text-container {
         flex-grow: 1;
+        width: 60%;
         cursor: pointer;
     }
 
     .card-text {
+        font-weight: bold;
+        font-size: 20px;
         text-align: center;
         margin-bottom: 20px;
+    }
+
+    .pink {
+        color: rgb(246, 114, 136);
+    }
+
+    .blue {
+        color: rgb(55, 124, 209);
     }
 
     .tag {
         font-size: 0.7rem;
         margin-left: 2px;
+        margin-top: 10px;
         /*color: #6c757d;*/
     }
 
@@ -111,7 +125,7 @@
 
     .text-muted-createdAt {
         display: block;
-        margin-top: 30px;
+        margin-top: 5px;
     }
     .card-row {
         display: flex;
@@ -145,6 +159,32 @@
         color: #fff;
         border: 1px solid #007bff;
     }
+
+    .title {
+        margin-left: 10%;
+    }
+
+    .logout-button {
+        margin-bottom: 15px;
+        margin-right: 10%;
+    }
+
+    .card-title {
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card-subtitle {
+        font-size: 14px;
+    }
+
+    .control-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
 </style>
 
 <script>
@@ -199,6 +239,13 @@
     }
 </script>
 
+<div class="logo-wrapper">
+    <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+        <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
+    </a>
+    <button type="button" class="btn btn-primary logout-button" onclick="window.location.href = `/users/signin`">로그아웃</button>
+</div>
+
 <div class="container card-container">
     <div class="btn-wrapper">
         <label style="font-size: 18px;">
@@ -231,7 +278,7 @@
                 <div class="card-body" data-id="{{ article._id}}">
                     <div class="card-text-container"
                          onclick="window.location.href = `/articles/${this.parentElement.getAttribute('data-id')}`">
-                        <h5 class="card-title">{{ article.title }}<span
+                        <h5 class="card-title">{{ article.title }}<br><span
                                 class="tag">(댓글 {{ article.comments|length }})</span><span class="tag">(공감 {{ article.likes|length }})</span>
                         </h5>
 
@@ -247,16 +294,18 @@
                     </div>
                     <div class="author-visible" data-id="{{article._id}}">
                         {% if (article.topic == "good") %}
-                        <p class="card-text">칭찬해요 😍</p>
+                        <p class="card-text pink">칭찬해요 😍</p>
                         {% else %}
-                        <p class="card-text">싫어요 🥲</p>
+                        <p class="card-text blue">아쉬워요 🥲</p>
                         {% endif %}
                         {% if (userId == article.author._id) %}
-                        <button type="button" class="btn btn-edit"
-                                onclick="window.location.href = `/articles/modify/${this.parentElement.getAttribute('data-id')}`">
-                            수정
-                        </button>
-                        <button type="button" class="btn btn-delete" onclick="deleteArticle(this)">삭제</button>
+                        <div class="control-buttons">
+                            <button type="button" class="btn btn-edit"
+                                    onclick="window.location.href = `/articles/modify/${this.parentElement.getAttribute('data-id')}`">
+                                수정
+                            </button>
+                            <button type="button" class="btn btn-delete" onclick="deleteArticle(this)">삭제</button>
+                        </div>
                         {% elif (userId in article.likes) %}
                         <a class="btn btn-like" onclick="dislikeArticle(this)">공감취소</a>
                         {% else %}
