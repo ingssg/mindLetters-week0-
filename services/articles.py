@@ -114,10 +114,9 @@ def create_article():
 
     article = {'topic': request.form['topic'], 'author': ObjectId(userId), 'title': request.form['title'],
                'body': request.form['body'],
-               'is_blind': bool(request.form['is_blind']), 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
+               'is_blind': request.form['is_blind']=="true", 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
                'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
 
-    articles_collection.insert_one(article)
     return jsonify({'result': 'success'})
 
 
@@ -143,8 +142,10 @@ def update_article(id):
 @articles_blueprint.route("/<string:id>")
 @jwt_required()
 def get_one_articles(id):
+    # author = request.args.get("author")
+    author = "commentUser"
     article = articles_collection.find_one({'_id': ObjectId(id)})
-    return render_template('article_detail.html', article=article)
+    return render_template('article_detail.html', article=article, author=author)
 
 
 @articles_blueprint.route("/new")

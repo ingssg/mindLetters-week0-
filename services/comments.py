@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from db import comments_collection, articles_collection
 from dto.comment import CommentDTO
 from bson import ObjectId
@@ -9,18 +9,19 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 comments_blueprint = Blueprint("comments_blueprint", __name__)
 
 
-@comments_blueprint.route("/")
+@comments_blueprint.route("/", methods=["POST"])
 def create_comment():
-    data = request.get_json()
-    comment = CommentDTO.from_dict(data)
 
-    comment.created_at = datetime.now()
+    comment = request.get_json()
+
+    comment["created_at"] = datetime.now()
     # client 에서 작성자 ObjectID author 에 추가하여 보냄
 
     result = comments_collection.insert_one(comment)
 
     # article 의 comments 배열에 comment ObjectId 추가
-    articles_collection.update_one({'_id': ObjectId(comment.article)}, {'$addToSet': {'comments': result.inserted_id}})
+    articles_collection.update_one({'_id': ObjectId(comment["article"])}, {'$addToSet': {'comments': result.inserted_id}})
+    return jsonify({'result': 'success'})
 
 
 @comments_blueprint.route("/<string:id>", methods=["PATCH"])
@@ -28,7 +29,7 @@ def create_comment():
 def update_comment(id):
     userId = get_jwt_identity()['_id']
 
-    data = request.get_json
+    data = request.get_json()
     comment = CommentDTO.from_dict(data)
 
     comment.updated_at = datetime.now()
