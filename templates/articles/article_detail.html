@@ -1,72 +1,226 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends "layout.html" %} {% block content %}
+<script
+  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"
+></script>
+
 <style>
-    dt, dd , h6{
-        display: inline;
-    }
+  dt,
+  dd,
+  h6,
+  p {
+    display: inline;
+  }
 
-    #container {
-        width: 50%;
-        margin: auto;
-        margin-top: 5%;
-    }
+  ul {
+    overflow-x: scroll;
+  }
 
-    #info {
-      display: inline;
-      float: right;
-    }
+  .delete-button {
+    border: 0;
+    background: none;
+    color: red;
+    padding: 0;
+  }
 
+  #container {
+    width: 50%;
+    margin: auto;
+    margin-top: 5%;
+  }
+
+  #info {
+    display: inline;
+    float: right;
+  }
+
+  #comment-container {
+    padding: 20px;
+  }
+
+  #letter-container {
+    padding: 20px;
+  }
+
+  #comment-list {
+    border-top: none;
+    max-height: 200px;
+  }
+
+  #content {
+    min-height: 200px;
+    margin-bottom: 20px;
+  }
+
+  #topic {
+    font-size: larger;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
 </style>
 <div id="container">
-    <h6>{% if article.topic=="good" %}칭찬해요{% else %}싫어요{% endif %}</h6>
+  <div id="topic">{% if article.topic=="good" %}칭찬해요<p>😊</p>{% else %}싫어요😡{% endif %}</div>
+
+  <div id="letter-container" class="card">
+  
+    <div id="title"class="input-group mb-3">
+      {{article.title}}
+    </div>
+  
+    <div id="content" class="input-group">
+      {{article.body}}
+    </div>
 
     <dl id="info">
+      <dt>공감 : </dt>
+      <dd>{{article.likes|length}}, </dd>
       <dt>작성자 :</dt>
       {% if article.is_blind %}
-      <dd>익명</dd>
+      <dd>익명,</dd>
       {% else %}
-      <dd>{{article.author}}</dd>
+      <dd>{{article.author.nickname}},</dd>
       {% endif %}
       <dt>생성일 :</dt>
       <dd>{{article.created_at}}</dd>
     </dl>
+  
+  </div>
+  <br />
+
+  <div id="comment-container" class="card">
+
+    <div id="blind-container" class="form-check">
+      <input id="is-blind" class="form-check-input" type="checkbox" value=""
+      id="flexCheckDefault">
+      <label class="form-check-label" for="flexCheckDefault"> 익명 </label>
+    </div>
 
     <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">제목</span>
-        <input type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1"
-               value={{article.title}} disabled>
+      <textarea
+        id="comment"
+        class="form-control"
+        aria-label="With textarea"
+        rows="1"
+      ></textarea>
+      <button
+        class="btn btn-outline-secondary"
+        type="button"
+        id="button-addon2"
+        onclick="saveComment()"
+      >
+        입력
+      </button>
     </div>
 
-    <div class="input-group">
-        <span class="input-group-text">내용</span>
-        <textarea class="form-control" aria-label="With textarea" rows="10" disabled>{{article.body}}</textarea>
-    </div>
-    <br>
-
-    <div class="input-group mb-3">
-      <textarea class="form-control" aria-label="With textarea" rows="1">{{article}}</textarea>
-      <button class="btn btn-outline-secondary" type="button" id="button-addon2">입력</button>
-    </div>
+      <ul id="comment-list" class="list-group">
+        <!-- <li class="list-group-item">  
+          <div class="justify-content-between d-flex">
+            <div>익명</div>
+            <div>2024.01.01</div>
+          </div>
+          <div class="justify-content-between d-flex">
+            <div>댓글입니다.</div>
+            <button type="button" class="btn btn-danger btn-sm delete-button">삭제</button>
+          </div>
+        </li> -->
+      </ul>
 
   </div>
 
-<script>
-  function saveComment() {
-    // $.ajax({
-    //   type:'POST',
-    //   url: "/comments",
-    //   data: {author, is_blind, title, body, topic},
-    //   success: function(response) {
-    //     if(response['result'] == "success") {
-    //         alert("등록 완료!");
-    //         window.location.href = '/articles'
-    //     }else{
-    //         alert("서버 오류!")
-    //     }
- 
-    //   }
-    // })
+</div>
 
+<script>
+
+  const article = "{{article._id}}";
+  
+
+  $(document).ready(function () {
+    getComments()
+  })
+
+
+  function getComments() {
+      $("#comment-list").html('')
+
+      $.ajax({
+          type: "GET",
+          url: `/comments/${article}`,
+          success: function (response) {
+              if (response["result"] == "success") {
+                  const commentList = response["comments"]
+                  console.log(commentList)
+                  for(let i=0;i<commentList.length;i++) {
+                    const comment = commentList[i]
+                    makeComment(i+1, comment._id, comment.author, comment.created_at, comment.body, comment.is_blind)
+                  }
+
+              } else {
+                  alert("서버 오류!");
+              }
+          },
+      });      
+  }
+
+  function makeComment(index, id, author, date, comment, is_blind) {
+    const userId = "{{userId}}"
+    let temp_html =
+    `<li id="comment-${index}" class="list-group-item">
+      <div class="justify-content-between d-flex">
+        <div>${is_blind ? "익명" : author.nickname}</div>
+        <div>${date}</div>
+      </div>
+      <div class="justify-content-between d-flex">
+        <div>${comment}</div>
+        <button type="button" class="btn btn-danger btn-sm delete-button" onclick="deleteComment('${id}')" ${userId == author._id? null:"style='display:none'"}>삭제</button>
+      </div>
+    </li>`
+
+    $('#comment-list').append(temp_html)
+  }
+
+  function deleteComment(id) {
+    $.ajax({
+        type: 'DELETE',
+        url: `/comments/${article}/${id}`,
+        data: {id: id},
+        success: function(response) {
+            if(response['result'] == "success") {
+                alert("댓글 삭제 완료!");
+                getComments();
+            }else{
+                alert("서버 오류!")
+            }
+        }
+    })
+  }
+
+  function saveComment() {
+    let body = $("#comment").val();
+    let is_blind = $('#is-blind').is(':checked');
+    $.ajax({
+      type: "POST",
+      url: `/comments/${article}`,
+      headers: {
+        "Content-type": "application/json",
+      },
+      data: JSON.stringify({
+        article,
+        body,
+        updated_at: null,
+        deleted_at: null,
+        is_blind,
+      }),
+      success: function (response) {
+        if (response["result"] == "success") {
+          alert("댓글 등록 완료!");
+          $("#comment").val('')
+          getComments()
+        } else {
+          alert("서버 오류!");
+        }
+      },
+    });
   }
 </script>
 {% endblock %}

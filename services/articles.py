@@ -1,44 +1,9 @@
 from flask import Blueprint, render_template, request, jsonify
-from db import articles_collection, users_collection
+from db import articles_collection
 from dto.article import ArticleDTO
 from bson import ObjectId
 from datetime import datetime
-from functools import wraps
-import jwt
-import os
-
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if "Authorization" in request.headers:
-            token = request.headers["Authorization"]
-        if not token:
-            return {
-                "message": "Authentication Token is missing!",
-                "data": None,
-                "error": "Unauthorized"
-            }, 401
-        try:
-            data=jwt.decode(token, os.getenv("JWT_SECRET_KEY"), algorithms=["HS256"])
-            current_user=users_collection.find_one({"_id": data['_id']})
-            if current_user is None:
-                return {
-                "message": "Invalid Authentication token!",
-                "data": None,
-                "error": "Unauthorized"
-            }, 401
-        except Exception as e:  # 예외 처리
-            return {  # 오류 응답을 반환합니다.
-                "message": "Something went wrong",  # 오류 메시지를 설정합니다.
-                "data": None,  # 데이터 부분을 비웁니다.
-                "error": str(e)  # 예외 메시지를 문자열로 변환하여 설정합니다.
-            }, 500
-        
-        return f(current_user, *args, **kwargs)
-    
-    return decorated
-
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 now = datetime.now()
 
@@ -47,11 +12,16 @@ articles_blueprint = Blueprint("articles_blueprint", __name__, template_folder="
 
 
 @articles_blueprint.route("/")
+@jwt_required()
 def get_all_articles():
+    userId = get_jwt_identity()['_id']
+
     topic_param = request.args.get("topic", default="all")
     page_param = request.args.get("page", default=1, type=int)
 
-    filter = {"deleted_at": None}
+    filter = {
+        "deleted_at": None,
+    }
 
     if topic_param in ["good", "bad"]:
         filter["topic"] = topic_param
@@ -62,12 +32,45 @@ def get_all_articles():
 
     total = articles_collection.count_documents(filter)
 
-    # todo author 를 작성자의 ObjectId 로 설정 후, GET 요청시 lookup 해 오도록 변경
-    list_of_articles = list(articles_collection.find(filter).sort({'_id': -1}).skip(skip).limit(limit))
+    pipeline = [
+        {
+            "$match": filter
+        }, {
+            "$sort": {"_id": -1}
+        }, {
+            "$skip": skip
+        }, {
+            "$limit": limit
+        },
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "author",
+                "foreignField": "_id",
+                "as": "author"
+            }
+        }, {
+            "$unwind": "$author"
+        }, {
+            "$project": {
+                "topic": 1,
+                "title": 1,
+                "created_at": 1,
+                "likes": 1,
+                "comments": 1,
+                "is_blind": 1,
+                "author.nickname": 1,
+                "author._id": 1,
+            }
+        }
+    ]
+
+    list_of_articles = list(articles_collection.aggregate(pipeline))
 
     # ObjectId 를 문자열로 변환
     for article in list_of_articles:
         article["_id"] = str(article["_id"])
+        article["author"]["_id"] = str(article["author"]["_id"])
 
     articles_object = [ArticleDTO.from_dict(article_dict) for article_dict in list_of_articles]
 
@@ -77,70 +80,117 @@ def get_all_articles():
 
     return render_template('article_list.html', articles=articles_object, topic=topic_param,
                            pagination={"total": total, "page": page_param, "size": page_size,
-                                       "start_page": start_page, "end_page": end_page})
+                                       "start_page": start_page, "end_page": end_page}, userId=userId)
 
 
 @articles_blueprint.route("/likes/<string:id>", methods=["POST"])
+@jwt_required()
 def like_article(id):
-    userId = "abc"  # get author id
+    userId = get_jwt_identity()['_id']
 
     filter = {'_id': ObjectId(id), 'deleted_at': None}
 
     articles_collection.update_one(filter, {'$addToSet': {'likes': userId}})
 
+    return jsonify({'result': 'success'})
+
 
 @articles_blueprint.route("/likes/<string:id>", methods=["DELETE"])
+@jwt_required()
 def dislike_article(id):
-    userId = "abc"  # get author id
+    userId = get_jwt_identity()['_id']
 
     filter = {'_id': ObjectId(id), 'deleted_at': None}
 
     articles_collection.update_one(filter, {'$pull': {'likes': userId}})
-
-
-@articles_blueprint.route("/", methods=["POST"])
-def create_article():
-    # 게시물 생성 기능 구현
-    article = {'topic': request.form['topic'], 'author': request.form['author'], 'title': request.form['title'],
-               'body': request.form['body'],
-               'is_blind': bool(request.form['is_blind']), 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
-               'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
-
-    articles_collection.insert_one(article)
     return jsonify({'result': 'success'})
 
 
-@articles_blueprint.route("/<string:id>", methods=["DELETE"])
-def remove_article():
-    # 게시물 삭제 기능 구현
-    return
+@articles_blueprint.route("/", methods=["POST"])
+@jwt_required()
+def create_article():
+    # 게시물 생성 기능 구현
+    userId = get_jwt_identity()['_id']
+
+    article = {'topic': request.form['topic'], 'author': ObjectId(userId), 'title': request.form['title'],
+               'body': request.form['body'],
+               'is_blind': request.form['is_blind'] == "true", 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
+               'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
+
+    articles_collection.insert_one(article)
+
+    return jsonify({'result': 'success'})
+
+
+@articles_blueprint.route("/<string:article_id>", methods=["DELETE"])
+@jwt_required()
+def remove_article(article_id):
+    userId = get_jwt_identity()['_id']
+
+    filter = {"deleted_at": None, "author": ObjectId(userId), '_id': ObjectId(article_id)}
+
+    articles_collection.update_one(filter, {"$set": {"deleted_at": datetime.now()}})
+
+    return jsonify({'result': 'success'})
 
 
 @articles_blueprint.route("/<string:id>", methods=["PATCH"])
+@jwt_required()
 def update_article(id):
     # 게시물 수정 기능 구현
     article = {'topic': request.form['topic'], 'title': request.form['title'], 'body': request.form['body'],
-               'is_blind': request.form['is_blind'], 'updated_at': now.strftime('%Y-%m-%d %H:%M:%S')}
+               'is_blind': request.form['is_blind'] == "true", 'updated_at': now.strftime('%Y-%m-%d %H:%M:%S')}
 
     articles_collection.update_one({'_id': ObjectId(id)}, {"$set": article})
     return jsonify({'result': 'success'})
 
 
 @articles_blueprint.route("/<string:id>")
+@jwt_required()
 def get_one_articles(id):
-    article = articles_collection.find_one({'_id': ObjectId(id)})
-    return render_template('article_detail.html', article=article)
+    userId = get_jwt_identity()['_id']
+
+    pipeline = [
+        {
+            "$match": {
+                "deleted_at": None,
+                "_id": ObjectId(id)
+            }
+        }, {
+            "$lookup": {
+                "from": "users",
+                "localField": "author",
+                "foreignField": "_id",
+                "as": "author"
+            }
+        }, {
+            "$unwind": "$author"
+        }, {
+            "$project": {
+                "topic": 1,
+                "title": 1,
+                "created_at": 1,
+                "likes": 1,
+                "comments": 1,
+                "is_blind": 1,
+                "body": 1,
+                "author.nickname": 1,
+                "author._id": 1,
+            }
+        }
+    ]
+
+    article = list(articles_collection.aggregate(pipeline))[0]
+
+    return render_template('article_detail.html', article=article, userId=userId)
 
 
-# 65ef8d9cf8506452fbb03c86
-# 65f00a141320c7693dbdaf7a
 @articles_blueprint.route("/new")
-@token_required
+@jwt_required()
 def create_article_page():
     # 게시물 작성 페이지 구현
-    # author = request.form['author']
-    author = "김철수"
-    return render_template('create_article.html', author=author, type="create")
+    userId = get_jwt_identity()['_id']
+    return render_template('create_article.html', author=userId, type="create")
 
 
 @articles_blueprint.route("/modify/<string:id>")

@@ -4,27 +4,16 @@ from datetime import datetime, timedelta
 import jwt
 import os
 import hashlib
+from flask_jwt_extended import (create_access_token, set_access_cookies)
 
 # html 파일이 있는 folder path 정의
 users_blueprint = Blueprint("users_blueprint", __name__, template_folder="../templates/users")
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
-
-# JWT 토큰 생성
-def generate_jwt_token(user_id):
-    payload = {
-        '_id': str(user_id),
-        'exp': datetime.utcnow() + timedelta(minutes=30)
-    }
-    token = jwt.encode(payload, JWT_SECRET_KEY, algorithm='HS256')
-    return token
-
-
 # 솔트 생성
 def generate_salt():
     return os.urandom(16).hex()
-
 
 # 비밀번호 솔팅, 키 스트레칭
 def hash_password(password, salt):
@@ -56,8 +45,12 @@ def signin_user():
         return jsonify({"error": "비밀번호가 일치하지 않습니다."}), 401
 
     # JWT 토큰 생성
-    jwt_token = generate_jwt_token(user_info['_id'])
+    resp = jsonify({'login': True})
+    access_token = create_access_token({'_id': str(user_info['_id'])}, expires_delta=timedelta(minutes=120))
+    set_access_cookies(resp, access_token)
 
+    # jwt_token = generate_jwt_token(user_info['_id'])
+    return resp, 200
     return jsonify({"result": "success", "token": jwt_token})
 
 @users_blueprint.route("/signup")

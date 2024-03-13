@@ -1,28 +1,28 @@
 {% extends "layout.html" %}
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"
-integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-crossorigin="anonymous"></script>
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+        crossorigin="anonymous"></script>
 
 <style>
-  #container {
-    width: 50%;
-    margin: auto;
-    margin-top: 5%;
-  }
+    #container {
+        width: 50%;
+        margin: auto;
+        margin-top: 5%;
+    }
 
-  #save_button {
-    margin-top: 10px;
-    float: right;
-  }
+    #save_button {
+        margin-top: 10px;
+        float: right;
+    }
 
-  #blind-container {
-    margin-bottom: 10px;
-  }
+    #blind-container {
+        margin-bottom: 10px;
+    }
 
-  #type {
-    margin-top: 10px;
-  }
+    #type {
+        margin-top: 10px;
+    }
 </style>
 
 <div id="container">
@@ -33,15 +33,16 @@ crossorigin="anonymous"></script>
     </label>
   </div>
 
-  <div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">제목</span>
-    <input id="title" type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1" value="{% if type == 'modify' %}{{article.title}}{% endif%}">
-  </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">제목</span>
+        <input id="title" type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1"
+               maxlength="30" value="{% if type == 'modify' %}{{article.title}}{% endif%}">
+    </div>
 
-  <div class="input-group">
-    <span class="input-group-text">내용</span>
-    <textarea id="content" class="form-control" aria-label="With textarea" rows="10">{% if type == 'modify' %}{{article.body}}{% endif%}</textarea>
-  </div>
+    <div class="input-group">
+        <span class="input-group-text">내용</span>
+        <textarea id="content" class="form-control" aria-label="With textarea" rows="10" maxlength="200">{% if type == 'modify' %}{{article.body}}{% endif%}</textarea>
+    </div>
 
   <select id="type" class="form-select" aria-label="Default select example">
     <option value="good" {% if (type == 'modify' and topic == 'good') or type=='create' %}selected{% endif%}>칭찬해요</option>
@@ -58,12 +59,38 @@ crossorigin="anonymous"></script>
 </div>
 
 <script>
+      $('#title').keyup(function (e) {
+    let title = $(this).val();
+    if(title.length > 30) {
+      alert("제목은 30자를 초과할 수 없습니다.")
+    }
+  })
+
+  $('#content').keyup(function (e) {
+    let content = $(this).val();
+    if(content.length > 200) {
+      alert("내용은 200자를 초과할 수 없습니다.")
+    }
+  })
+
+
+
   function createLetter() {
     let author = "{{author}}"
     let is_blind = $('#is-blind').is(':checked')
     let title = $('#title').val()
     let body = $('#content').val()
     let topic = $('#type').val()
+
+    if(!title || title.trim() <=0) {
+      alert("제목을 입력해주세요.")
+      return
+    }
+
+    if(!body || body.trim() <=0) {
+      alert("내용을 입력해주세요.")
+      return
+    }
 
     $.ajax({
       type:'POST',
@@ -86,7 +113,17 @@ crossorigin="anonymous"></script>
     let title = $('#title').val()
     let body = $('#content').val()
     let topic = $('#type').val()
-    console.log("modify", is_blind, title, body, topic)
+
+    if(!title || title.trim() <=0) {
+      alert("제목을 입력해주세요.")
+      return
+    }
+
+    if(!body || body.trim() <=0) {
+      alert("내용을 입력해주세요.")
+      return
+    }
+
 
     $.ajax({
       type:'PATCH',
