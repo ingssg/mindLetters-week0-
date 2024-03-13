@@ -104,7 +104,7 @@
     </div>
 
       <ul id="comment-list" class="list-group">
-        <!-- <li class="list-group-item">
+        <!-- <li class="list-group-item">  
           <div class="justify-content-between d-flex">
             <div>익명</div>
             <div>2024.01.01</div>
@@ -123,33 +123,46 @@
 <script>
 
   const article = "{{article._id}}";
+  
+
+  $(document).ready(function () {
+    getComments()
+  })
+
 
   function getComments() {
+      $("#comment-list").html('')
+
       $.ajax({
           type: "GET",
           url: `/comments/${article}`,
           success: function (response) {
               if (response["result"] == "success") {
-                  console.log(response["comments"])
+                  const commentList = response["comments"]
+                  console.log(commentList)
+                  for(let i=0;i<commentList.length;i++) {
+                    const comment = commentList[i]
+                    makeComment(i+1, comment._id, comment.author, comment.created_at, comment.body, comment.is_blind)
+                  }
+
               } else {
                   alert("서버 오류!");
               }
           },
-      });
+      });      
   }
 
-
-
-  function makeComment(index, id, author, date, comment) {
+  function makeComment(index, id, author, date, comment, is_blind) {
+    const userId = "{{userId}}"
     let temp_html =
     `<li id="comment-${index}" class="list-group-item">
       <div class="justify-content-between d-flex">
-        <div>${author}</div>
+        <div>${is_blind ? "익명" : author.nickname}</div>
         <div>${date}</div>
       </div>
       <div class="justify-content-between d-flex">
         <div>${comment}</div>
-        <button type="button" class="btn btn-danger btn-sm delete-button" onclick="deleteComment(${id})">삭제</button>
+        <button type="button" class="btn btn-danger btn-sm delete-button" onclick="deleteComment('${id}')" ${userId == author._id? null:"style='display:none'"}>삭제</button>
       </div>
     </li>`
 
@@ -157,7 +170,19 @@
   }
 
   function deleteComment(id) {
-    console.log("id", id)
+    $.ajax({
+        type: 'DELETE',
+        url: `/comments/${article}/${id}`,
+        data: {id: id},
+        success: function(response) {
+            if(response['result'] == "success") {
+                alert("댓글 삭제 완료!");
+                getComments();
+            }else{
+                alert("서버 오류!")
+            }
+        }
+    })
   }
 
   function saveComment() {
@@ -179,7 +204,8 @@
       success: function (response) {
         if (response["result"] == "success") {
           alert("댓글 등록 완료!");
-          makeCommentList()
+          $("#comment").val('')
+          getComments()
         } else {
           alert("서버 오류!");
         }

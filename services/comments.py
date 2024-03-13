@@ -87,6 +87,7 @@ def update_comment(id):
 @comments_blueprint.route("/<string:article_id>/<string:comment_id>", methods=["DELETE"])
 @jwt_required()
 def remove_comment(article_id, comment_id):
+    print("-------------", article_id, comment_id)
     userId = get_jwt_identity()['_id']
 
     filter = {'deleted_at': None, '_id': ObjectId(comment_id), 'author': ObjectId(userId)}
