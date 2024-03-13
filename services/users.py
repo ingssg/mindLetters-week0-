@@ -11,6 +11,16 @@ users_blueprint = Blueprint("users_blueprint", __name__, template_folder="../tem
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
+# JWT 토큰 생성
+# def generate_jwt_token(user_id):
+#     payload = {
+#         '_id': str(user_id),
+#         'exp': datetime.utcnow() + timedelta(minutes=30)
+#     }
+#     token = jwt.encode(payload, JWT_SECRET_KEY, algorithm='HS256')
+#     return token
+
+
 # 솔트 생성
 def generate_salt():
     return os.urandom(16).hex()
@@ -41,17 +51,18 @@ def signin_user():
     if not user_info:
         return jsonify({"error": "존재하지 않는 아이디입니다."}), 401
 
-    if(hash_password(user['password'], user_info['salt']) != user_info['hashed_password']):
-        return jsonify({"error": "비밀번호가 일치하지 않습니다."}), 401
+    if hash_password(user['password'], user_info['salt']) != user_info['hashed_password']:
+        return render_template('signin.html', error="비밀번호가 일치하지 않습니다.")
 
+    # https://flask-jwt-extended.readthedocs.io/en/3.0.0_release/tokens_in_cookies/
     # JWT 토큰 생성
     resp = jsonify({'login': True})
     access_token = create_access_token({'_id': str(user_info['_id'])}, expires_delta=timedelta(minutes=120))
     set_access_cookies(resp, access_token)
 
     # jwt_token = generate_jwt_token(user_info['_id'])
+
     return resp, 200
-    return jsonify({"result": "success", "token": jwt_token})
 
 @users_blueprint.route("/signup")
 def signup():

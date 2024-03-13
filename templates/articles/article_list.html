@@ -113,7 +113,6 @@
         display: block;
         margin-top: 30px;
     }
-
     .card-row {
         display: flex;
         justify-content: center;
@@ -152,7 +151,6 @@
     function likeArticle(btn) {
         const divElement = btn.closest('div');
         const articleId = divElement.getAttribute('data-id');
-
         $.ajax({
             type: 'POST',
             url: `/articles/likes/${articleId}`,
@@ -169,7 +167,6 @@
     function dislikeArticle(btn) {
         const divElement = btn.closest('div');
         const articleId = divElement.getAttribute('data-id');
-
         $.ajax({
             type: 'DELETE',
             url: `/articles/likes/${articleId}`,
