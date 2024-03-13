@@ -58,7 +58,7 @@
 
 </style>
 <div class="form-wrapper">
-  <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+  <a class="title" id="logo" href="/users/signin">마음의 편지
     <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
   </a>
   <div class="signup">
@@ -78,6 +78,15 @@
   </form>
 </div>
 <script>
+
+    if('{{isExpired}}') {
+      alert("로그인 정보가 만료되었습니다. 다시 로그인 해주세요.");
+    }
+
+    if('{{hasNoToken}}') {
+      alert("먼저 로그인을 해주세요.");
+    }
+
     $(document).ready(function () {
         $('#loginForm').submit(function (e) {
             e.preventDefault();

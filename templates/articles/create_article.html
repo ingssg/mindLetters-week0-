@@ -21,11 +21,6 @@
         margin-left: 10%;
     }
 
-    .logout-button {
-        margin-bottom: 15px;
-        margin-right: 10%;
-    }
-
     #container {
         background-color: #e0f7fa;
         border-radius: 20px;
@@ -57,10 +52,9 @@
 </style>
 
 <div class="logo-wrapper">
-  <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+  <a class="title" id="logo" href="/articles">마음의 편지
       <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
   </a>
-  <button type="button" class="btn btn-primary logout-button" onclick="window.location.href = `/users/signin`">로그아웃</button>
 </div>
 
 <div id="container">
@@ -84,7 +78,7 @@
 
   <select id="type" class="form-select" aria-label="Default select example">
     <option value="good" {% if (type == 'modify' and topic == 'good') or type=='create' %}selected{% endif%}>칭찬해요</option>
-    <option value="bad" {% if (type == 'modify' and topic == 'bod') %}selected{% endif%}>싫어요</option>
+    <option value="bad" {% if (type == 'modify' and topic == 'bod') %}selected{% endif%}>아쉬워요</option>
   </select>
 
   {% if type == 'create' %}

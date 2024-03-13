@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import jwt
 import os
 import hashlib
-from flask_jwt_extended import (create_access_token, set_access_cookies)
+from flask_jwt_extended import (create_access_token, set_access_cookies, unset_jwt_cookies)
 
 # html 파일이 있는 folder path 정의
 users_blueprint = Blueprint("users_blueprint", __name__, template_folder="../templates/users")
@@ -63,6 +63,15 @@ def signin_user():
     # jwt_token = generate_jwt_token(user_info['_id'])
 
     return resp, 200
+
+@users_blueprint.route("/logout", methods=['POST'])
+def logout_user():
+    # JWT 쿠키 삭제
+    resp = jsonify({'logout': True})
+    unset_jwt_cookies(resp)
+
+    return resp, 200
+
 
 @users_blueprint.route("/signup")
 def signup():

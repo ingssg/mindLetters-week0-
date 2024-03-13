@@ -92,11 +92,6 @@
       margin-left: 10%;
   }
 
-  .logout-button {
-      margin-bottom: 15px;
-      margin-right: 10%;
-  }
-
   #button-addon2 {
     margin-left: 10px;
     background-color: #007bff;
@@ -141,10 +136,9 @@
 </style>
 
 <div class="logo-wrapper">
-  <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+  <a class="title" id="logo" href="/articles">마음의 편지
       <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
   </a>
-  <button type="button" class="btn btn-primary logout-button" onclick="window.location.href = `/users/signin`">로그아웃</button>
 </div>
 
 <div id="container">
