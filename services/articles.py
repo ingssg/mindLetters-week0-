@@ -83,7 +83,7 @@ def remove_article():
 def update_article(id):
     # 게시물 수정 기능 구현
     article = {'topic': request.form['topic'], 'title': request.form['title'], 'body': request.form['body'],
-               'is_blind': request.form['is_blind'], 'updated_at': now.strftime('%Y-%m-%d %H:%M:%S')}
+               'is_blind': request.form['is_blind']=="true", 'updated_at': now.strftime('%Y-%m-%d %H:%M:%S')}
 
     articles_collection.update_one({'_id': ObjectId(id)}, {"$set": article})
     return jsonify({'result': 'success'})

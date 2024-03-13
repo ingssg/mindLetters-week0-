@@ -12,6 +12,13 @@
     display: inline;
   }
 
+  .delete-button {
+    border: 0;
+    background: none;
+    color: red;
+    padding: 0;
+  }
+
   #container {
     width: 50%;
     margin: auto;
@@ -22,16 +29,25 @@
     display: inline;
     float: right;
   }
+
+  #commentContainer {
+    padding: 20px;
+  }
+
+  #comment-list {
+    border-top: none;
+  }
 </style>
 <div id="container">
   <h6>{% if article.topic=="good" %}칭찬해요{% else %}싫어요{% endif %}</h6>
-
   <dl id="info">
+    <dt>공감 : </dt>
+    <dd>{{article.likes|length}}, </dd>
     <dt>작성자 :</dt>
     {% if article.is_blind %}
-    <dd>익명</dd>
+    <dd>익명,</dd>
     {% else %}
-    <dd>{{article.author}}</dd>
+    <dd>{{article.author}},</dd>
     {% endif %}
     <dt>생성일 :</dt>
     <dd>{{article.created_at}}</dd>
@@ -62,31 +78,114 @@
   </div>
   <br />
 
-  <div id="blind-container" class="form-check">
-    <input id="is-blind" class="form-check-input" type="checkbox" value=""
-    id="flexCheckDefault">
-    <label class="form-check-label" for="flexCheckDefault"> 익명 </label>
+  <div id="commentContainer" class="card">
+
+    <div id="blind-container" class="form-check">
+      <input id="is-blind" class="form-check-input" type="checkbox" value=""
+      id="flexCheckDefault">
+      <label class="form-check-label" for="flexCheckDefault"> 익명 </label>
+    </div>
+
+    <div class="input-group mb-3">
+      <textarea
+        id="comment"
+        class="form-control"
+        aria-label="With textarea"
+        rows="1"
+      ></textarea>
+      <button
+        class="btn btn-outline-secondary"
+        type="button"
+        id="button-addon2"
+        onclick="saveComment()"
+      >
+        입력
+      </button>
+    </div>
+
+      <ul id="comment-list" class="list-group">
+        <!-- <li class="list-group-item">
+          <div class="justify-content-between d-flex">
+            <div>익명</div>
+            <div>2024.01.01</div>
+          </div>
+          <div class="justify-content-between d-flex">
+            <div>댓글입니다.</div>
+            <button type="button" class="btn btn-danger btn-sm delete-button">삭제</button>
+          </div>
+        </li> -->
+      </ul>
+    
   </div>
 
-  <div class="input-group mb-3">
-    <textarea
-      id="comment"
-      class="form-control"
-      aria-label="With textarea"
-      rows="1"
-    ></textarea>
-    <button
-      class="btn btn-outline-secondary"
-      type="button"
-      id="button-addon2"
-      onclick="saveComment()"
-    >
-      입력
-    </button>
-  </div>
 </div>
 
 <script>
+  $(document).ready(function () {
+    makeCommentList()
+  })
+
+  function makeCommentList() {
+    // comment list 불러오기
+
+    // temp list
+    let commentList = [
+          {"_id": 0,
+            "article": 1,
+            "author": "name",
+            "body": "comment...",
+            "created_at": "2024-11-11 00:00:00",
+            "updated_at": null,
+            "deleted_at": null,
+            "is_blind": true,
+          },
+          {"_id": 0,
+            "article": 1,
+            "author": "name",
+            "body": "comment...",
+            "created_at": "2024-11-11 00:00:00",
+            "updated_at": null,
+            "deleted_at": null,
+            "is_blind": true,
+          },
+          {"_id": 0,
+            "article": 1,
+            "author": "name",
+            "body": "comment...",
+            "created_at": "2024-11-11 00:00:00",
+            "updated_at": null,
+            "deleted_at": null,
+            "is_blind": true,
+          },
+        ]
+
+    for(let i=0;i<commentList.length;i++) {
+      const comment = commentList[i]
+      makeComment(i+1, comment._id, comment.author, comment.created_at, comment.body)
+    }
+    
+  }
+  
+  function makeComment(index, id, author, date, comment) {
+    let temp_html = 
+    `<li id="comment-${index}" class="list-group-item">
+      <div class="justify-content-between d-flex">
+        <div>${author}</div>
+        <div>${date}</div>
+      </div>
+      <div class="justify-content-between d-flex">
+        <div>${comment}</div>
+        <button type="button" class="btn btn-danger btn-sm delete-button" onclick="deleteComment(${id})">삭제</button>
+      </div>
+    </li>`
+
+    $('#comment-list').append(temp_html)
+  }
+
+  function deleteComment(id) {
+    console.log("id", id)
+  }
+
   function saveComment() {
     console.log("article", "{{article._id}}");
     let article = "{{article._id}}";
@@ -111,7 +210,7 @@
       success: function (response) {
         if (response["result"] == "success") {
           alert("댓글 등록 완료!");
-          window.location.href = "/articles/" + "{{article._id}}";
+          makeCommentList()
         } else {
           alert("서버 오류!");
         }

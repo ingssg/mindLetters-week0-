@@ -35,12 +35,12 @@ crossorigin="anonymous"></script>
 
   <div class="input-group mb-3">
     <span class="input-group-text" id="basic-addon1">제목</span>
-    <input id="title" type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1" value="{% if type == 'modify' %}{{article.title}}{% endif%}">
+    <input id="title" type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1" maxlength="30" value="{% if type == 'modify' %}{{article.title}}{% endif%}">
   </div>
 
   <div class="input-group">
     <span class="input-group-text">내용</span>
-    <textarea id="content" class="form-control" aria-label="With textarea" rows="10">{% if type == 'modify' %}{{article.body}}{% endif%}</textarea>
+    <textarea id="content" class="form-control" aria-label="With textarea" rows="10" maxlength="200">{% if type == 'modify' %}{{article.body}}{% endif%}</textarea>
   </div>
 
   <select id="type" class="form-select" aria-label="Default select example">
@@ -58,12 +58,30 @@ crossorigin="anonymous"></script>
 </div>
 
 <script>
+    $('#title').keyup(function (e) {
+    let title = $(this).val();
+    if(title.length > 30) {
+      alert("제목은 30자를 초과할 수 없습니다.")
+    }
+  })
+
+  $('#content').keyup(function (e) {
+    let content = $(this).val();
+    if(content.length > 200) {
+      alert("내용은 200자를 초과할 수 없습니다.")
+    }
+  })
+
+
+
   function createLetter() {
     let author = "{{author}}"
     let is_blind = $('#is-blind').is(':checked')
     let title = $('#title').val()
     let body = $('#content').val()
     let topic = $('#type').val()
+
+    console.log("is_blind", is_blind)
 
     $.ajax({
       type:'POST',
