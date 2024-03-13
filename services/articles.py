@@ -70,6 +70,7 @@ def get_all_articles():
     # ObjectId 를 문자열로 변환
     for article in list_of_articles:
         article["_id"] = str(article["_id"])
+        article["author"]["_id"] = str(article["author"]["_id"])
 
     articles_object = [ArticleDTO.from_dict(article_dict) for article_dict in list_of_articles]
 
