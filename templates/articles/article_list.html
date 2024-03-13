@@ -299,7 +299,7 @@
                         <p class="card-text blue">아쉬워요 🥲</p>
                         {% endif %}
                         {% if (userId == article.author._id) %}
-                        <div class="control-buttons">
+                        <div class="control-buttons" data-id="{{article._id}}">
                             <button type="button" class="btn btn-edit"
                                     onclick="window.location.href = `/articles/modify/${this.parentElement.getAttribute('data-id')}`">
                                 수정
