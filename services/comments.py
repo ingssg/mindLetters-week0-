@@ -57,7 +57,7 @@ def create_comment(article_id):
     userId = get_jwt_identity()['_id']
     comment = request.get_json()
 
-    comment["created_at"] = datetime.now()
+    comment["created_at"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     comment["author"] = ObjectId(userId)
     comment["article"] = ObjectId(article_id)
 
@@ -77,7 +77,7 @@ def update_comment(id):
     data = request.get_json()
     comment = CommentDTO.from_dict(data)
 
-    comment.updated_at = datetime.now()
+    comment.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     filter = {'_id': ObjectId(id), 'author': ObjectId(userId)}
 
@@ -92,7 +92,7 @@ def remove_comment(article_id, comment_id):
 
     filter = {'deleted_at': None, '_id': ObjectId(comment_id), 'author': ObjectId(userId)}
 
-    update_result = comments_collection.update_one(filter, {"$set": {"deleted_at": datetime.now()}})
+    update_result = comments_collection.update_one(filter, {"$set": {"deleted_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S')}})
 
     if update_result.modified_count:
         # article 의 comments 배열에서 comment ObjectId 삭제

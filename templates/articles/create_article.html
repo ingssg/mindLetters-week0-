@@ -5,10 +5,33 @@
         crossorigin="anonymous"></script>
 
 <style>
+    .logo-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        width: 100%;
+        margin-bottom: 50px;
+    }
+
+    #logo {
+        margin-top: 40px;
+    }
+
+    .title {
+        margin-left: 10%;
+    }
+
+    .logout-button {
+        margin-bottom: 15px;
+        margin-right: 10%;
+    }
+
     #container {
-        width: 50%;
-        margin: auto;
-        margin-top: 5%;
+        background-color: #e0f7fa;
+        border-radius: 20px;
+        padding: 30px;
+        width: 60vw;
+        margin: 0 auto;
     }
 
     #save_button {
@@ -23,7 +46,15 @@
     #type {
         margin-top: 10px;
     }
+
 </style>
+
+<div class="logo-wrapper">
+  <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+      <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
+  </a>
+  <button type="button" class="btn btn-primary logout-button" onclick="window.location.href = `/users/signin`">로그아웃</button>
+</div>
 
 <div id="container">
   <div id="blind-container" class="form-check">
