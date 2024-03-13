@@ -68,7 +68,7 @@ def signin_user():
     # https://flask-jwt-extended.readthedocs.io/en/3.0.0_release/tokens_in_cookies/
     # JWT 토큰 생성
     resp = jsonify({'login': True})
-    access_token = create_access_token({'_id': str(user_info['_id'])})
+    access_token = create_access_token({'_id': str(user_info['_id'])}, expires_delta=timedelta(minutes=120))
     set_access_cookies(resp, access_token)
 
     # jwt_token = generate_jwt_token(user_info['_id'])
