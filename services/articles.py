@@ -123,10 +123,14 @@ def create_article():
 
 @articles_blueprint.route("/<string:id>", methods=["DELETE"])
 @jwt_required()
-def remove_article():
+def remove_article(article_id):
     userId = get_jwt_identity()['_id']
-    # 게시물 삭제 기능 구현
-    return
+
+    filter = {"deleted_at": None, "author": ObjectId(userId), '_id': ObjectId(article_id)}
+
+    articles_collection.update_one(filter, {"$set": {"deleted_at": datetime.now()}})
+
+    return jsonify({'result': 'success'})
 
 
 @articles_blueprint.route("/<string:id>", methods=["PATCH"])
@@ -134,7 +138,7 @@ def remove_article():
 def update_article(id):
     # 게시물 수정 기능 구현
     article = {'topic': request.form['topic'], 'title': request.form['title'], 'body': request.form['body'],
-               'is_blind': request.form['is_blind']=="true", 'updated_at': now.strftime('%Y-%m-%d %H:%M:%S')}
+               'is_blind': request.form['is_blind'] == "true", 'updated_at': now.strftime('%Y-%m-%d %H:%M:%S')}
 
     articles_collection.update_one({'_id': ObjectId(id)}, {"$set": article})
     return jsonify({'result': 'success'})
