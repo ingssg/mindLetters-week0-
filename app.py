@@ -1,7 +1,7 @@
 # https://www.geeksforgeeks.org/templating-with-jinja2-in-flask/
 import os
 
-from flask import Flask
+from flask import Flask, redirect, url_for
 from services.users import users_blueprint
 from services.articles import articles_blueprint
 from services.comments import comments_blueprint
@@ -27,7 +27,7 @@ app.register_blueprint(comments_blueprint, url_prefix='/comments')
 
 @app.route("/")
 def home():
-    return "Hello, World!"
+    return redirect(url_for('users_blueprint.signin'))
 
 
 if __name__ == '__main__':
