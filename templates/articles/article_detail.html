@@ -58,9 +58,18 @@
     font-weight: bold;
     margin-bottom: 10px;
   }
+
+  #back-list {
+    float: right;
+    border: none;
+    background: none;
+  }
 </style>
 <div id="container">
-  <div id="topic">{% if article.topic=="good" %}칭찬해요<p>😊</p>{% else %}싫어요😡{% endif %}</div>
+  <div class="d-flex justify-content-between">
+    <div id="topic">{% if article.topic=="good" %}칭찬해요<p>😊</p>{% else %}싫어요😡{% endif %}</div>
+  </div>
+
 
   <div id="letter-container" class="card">
   
@@ -86,7 +95,7 @@
     </dl>
   
   </div>
-  <br />
+  <br>
 
   <div id="comment-container" class="card">
 
@@ -127,6 +136,8 @@
       </ul>
 
   </div>
+  <a id="back-list" href="/articles" class="btn btn-light" role="button" aria-pressed="true">목록보기</a>
+
 
 </div>
 
