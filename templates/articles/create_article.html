@@ -34,9 +34,16 @@
         margin: 0 auto;
     }
 
-    #save_button {
+    #save_button,
+    #cancel_button {
         margin-top: 10px;
+        margin-left: 5px;
         float: right;
+    }
+
+    #cancel_button a {
+        color: white;
+        text-decoration: none;
     }
 
     #blind-container {
@@ -81,8 +88,14 @@
   </select>
 
   {% if type == 'create' %}
+  <button id="cancel_button" type="button" class="btn btn-primary btn-sm">
+    <a href="/articles">취소</a>
+  </button>
   <button id="save_button" type="button" class="btn btn-primary btn-sm" onclick="createLetter()">작성하기</button>
   {% else %}
+  <button id="cancel_button" type="button" class="btn btn-primary btn-sm">
+    <a href="/articles">취소</a>
+  </button>
   <button id="save_button" type="button" class="btn btn-primary btn-sm" onclick="modifyLetter()">수정하기</button>
   {% endif%}
 
