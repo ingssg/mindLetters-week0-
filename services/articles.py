@@ -116,6 +116,8 @@ def create_article():
                'is_blind': request.form['is_blind'] == "true", 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
                'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
 
+    articles_collection.insert_one(article)
+
     return jsonify({'result': 'success'})
 
 
