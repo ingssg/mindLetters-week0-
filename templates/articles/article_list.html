@@ -237,13 +237,29 @@
             }
         })
     }
+
+    function logout() {
+        $.ajax({
+            type: 'POST',
+            url: '/users/logout',
+            success: function(response) {
+                alert("로그아웃되었습니다.");
+                window.location.href = "/users/signin";
+            },
+            error: function(xhr, status, error) {
+                // 에러 처리
+                console.error('에러:', error);
+            }
+        });
+    }
+
 </script>
 
 <div class="logo-wrapper">
-    <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+    <a class="title" id="logo" href="/articles">마음의 편지
         <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
     </a>
-    <button type="button" class="btn btn-primary logout-button" onclick="window.location.href = `/users/signin`">로그아웃</button>
+    <button type="button" class="btn btn-primary logout-button" onclick="logout()">로그아웃</button>
 </div>
 
 <div class="container card-container">
@@ -254,17 +270,17 @@
                 {% if (topic == "all") %}
                 <option value="all" selected>전체 보기</option>
                 <option value="good">칭찬해요</option>
-                <option value="bad">싫어요</option>
+                <option value="bad">아쉬워요</option>
                 {% endif %}
                 {% if (topic == "good") %}
                 <option value="all">전체 보기</option>
                 <option value="good" selected>칭찬해요</option>
-                <option value="bad">싫어요</option>
+                <option value="bad">아쉬워요</option>
                 {% endif %}
                 {% if (topic == "bad") %}
                 <option value="all">전체 보기</option>
                 <option value="good">칭찬해요</option>
-                <option value="bad" selected>싫어요</option>
+                <option value="bad" selected>아쉬워요</option>
                 {% endif %}
             </select>
         </label>
@@ -299,7 +315,7 @@
                         <p class="card-text blue">아쉬워요 🥲</p>
                         {% endif %}
                         {% if (userId == article.author._id) %}
-                        <div class="control-buttons">
+                        <div class="control-buttons" data-id="{{article._id}}">
                             <button type="button" class="btn btn-edit"
                                     onclick="window.location.href = `/articles/modify/${this.parentElement.getAttribute('data-id')}`">
                                 수정
