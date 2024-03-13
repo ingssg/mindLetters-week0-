@@ -48,8 +48,6 @@
                 url: '/users/signin',
                 data: formData,
                 success: function (response) {
-                    localStorage.setItem('jwt_token', response.token);
-
                     window.location.href = "/articles"
                 },
                 error: function (xhr, status, error) {

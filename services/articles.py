@@ -1,8 +1,10 @@
+import jwt
 from flask import Blueprint, render_template, request, jsonify
 from db import articles_collection
 from dto.article import ArticleDTO
 from bson import ObjectId
 from datetime import datetime
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 now = datetime.now()
 
@@ -11,7 +13,10 @@ articles_blueprint = Blueprint("articles_blueprint", __name__, template_folder="
 
 
 @articles_blueprint.route("/")
+@jwt_required()
 def get_all_articles():
+    userId = get_jwt_identity()['_id']
+
     topic_param = request.args.get("topic", default="all")
     page_param = request.args.get("page", default=1, type=int)
 
@@ -26,8 +31,42 @@ def get_all_articles():
 
     total = articles_collection.count_documents(filter)
 
+    pipeline = [
+        {
+            "$match": {
+                "deleted_at": None
+            }
+        }, {
+            "$sort": {"_id": -1}
+        }, {
+            "$skip": skip
+        }, {
+            "$limit": limit
+        },
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "author",
+                "foreignField": "_id",
+                "as": "author"
+            }
+        }, {
+            "$unwind": "$author"
+        }, {
+            "$project": {
+                "topic": 1,
+                "title": 1,
+                "created_at": 1,
+                "likes": 1,
+                "comments": 1,
+                "is_blind": 1,
+                "author.nickname": 1,
+                "author._id": 1,
+            }
+        }
+    ]
     # todo author 를 작성자의 ObjectId 로 설정 후, GET 요청시 lookup 해 오도록 변경
-    list_of_articles = list(articles_collection.find(filter).sort({'_id': -1}).skip(skip).limit(limit))
+    list_of_articles = list(articles_collection.aggregate(pipeline))
 
     # ObjectId 를 문자열로 변환
     for article in list_of_articles:
@@ -41,31 +80,39 @@ def get_all_articles():
 
     return render_template('article_list.html', articles=articles_object, topic=topic_param,
                            pagination={"total": total, "page": page_param, "size": page_size,
-                                       "start_page": start_page, "end_page": end_page})
+                                       "start_page": start_page, "end_page": end_page}, userId=userId)
 
 
 @articles_blueprint.route("/likes/<string:id>", methods=["POST"])
+@jwt_required()
 def like_article(id):
-    userId = "abc"  # get author id
+    userId = get_jwt_identity()['_id']
 
     filter = {'_id': ObjectId(id), 'deleted_at': None}
 
     articles_collection.update_one(filter, {'$addToSet': {'likes': userId}})
 
+    return jsonify({'result': 'success'})
+
 
 @articles_blueprint.route("/likes/<string:id>", methods=["DELETE"])
+@jwt_required()
 def dislike_article(id):
-    userId = "abc"  # get author id
+    userId = get_jwt_identity()['_id']
 
     filter = {'_id': ObjectId(id), 'deleted_at': None}
 
     articles_collection.update_one(filter, {'$pull': {'likes': userId}})
+    return jsonify({'result': 'success'})
 
 
 @articles_blueprint.route("/", methods=["POST"])
+@jwt_required()
 def create_article():
     # 게시물 생성 기능 구현
-    article = {'topic': request.form['topic'], 'author': request.form['author'], 'title': request.form['title'],
+    userId = get_jwt_identity()['_id']
+
+    article = {'topic': request.form['topic'], 'author': ObjectId(userId), 'title': request.form['title'],
                'body': request.form['body'],
                'is_blind': request.form['is_blind']=="true", 'created_at': now.strftime('%Y-%m-%d %H:%M:%S'),
                'updated_at': None, 'deleted_at': None, 'comments': [], 'likes': []}
@@ -74,12 +121,15 @@ def create_article():
 
 
 @articles_blueprint.route("/<string:id>", methods=["DELETE"])
+@jwt_required()
 def remove_article():
+    userId = get_jwt_identity()['_id']
     # 게시물 삭제 기능 구현
     return
 
 
 @articles_blueprint.route("/<string:id>", methods=["PATCH"])
+@jwt_required()
 def update_article(id):
     # 게시물 수정 기능 구현
     article = {'topic': request.form['topic'], 'title': request.form['title'], 'body': request.form['body'],
@@ -90,6 +140,7 @@ def update_article(id):
 
 
 @articles_blueprint.route("/<string:id>")
+@jwt_required()
 def get_one_articles(id):
     # author = request.args.get("author")
     author = "commentUser"
@@ -97,14 +148,12 @@ def get_one_articles(id):
     return render_template('article_detail.html', article=article, author=author)
 
 
-# 65ef8d9cf8506452fbb03c86
-# 65f00a141320c7693dbdaf7a
 @articles_blueprint.route("/new")
+@jwt_required()
 def create_article_page():
     # 게시물 작성 페이지 구현
-    # author = request.form['author']
-    author = "김철수"
-    return render_template('create_article.html', author=author, type="create")
+    userId = get_jwt_identity()['_id']
+    return render_template('create_article.html', author=userId, type="create")
 
 
 @articles_blueprint.route("/modify/<string:id>")
