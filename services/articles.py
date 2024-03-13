@@ -1,4 +1,3 @@
-import jwt
 from flask import Blueprint, render_template, request, jsonify
 from db import articles_collection
 from dto.article import ArticleDTO
