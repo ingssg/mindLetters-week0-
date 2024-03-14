@@ -61,11 +61,13 @@
     min-height: 200px;
     margin-bottom: 20px;
   }
+
   #topic {
     font-size: 30px;
     font-weight: bold;
     margin-bottom: 10px;
   }
+
   #back-list {
     float: right;
     border: none;
@@ -88,11 +90,6 @@
 
   .title {
       margin-left: 10%;
-  }
-
-  .logout-button {
-      margin-bottom: 15px;
-      margin-right: 10%;
   }
 
   #button-addon2 {
@@ -139,10 +136,9 @@
 </style>
 
 <div class="logo-wrapper">
-  <a class="title" id="logo" href="{{ url_for('users_blueprint.signin') }}">마음의 편지
+  <a class="title" id="logo" href="/articles">마음의 편지
       <img class="mindletter" src="{{ url_for('static', filename='mindletter_logo.png') }} " alt="마음의 편지">
   </a>
-  <button type="button" class="btn btn-primary logout-button" onclick="window.location.href = `/users/signin`">로그아웃</button>
 </div>
 
 <div id="container">
@@ -221,7 +217,7 @@
       </ul>
 
   </div>
-
+<a id="back-list" href="/articles" class="btn btn-light" role="button" aria-pressed="true">목록보기</a>
 </div>
 
 <script>

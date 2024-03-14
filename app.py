@@ -1,7 +1,7 @@
 # https://www.geeksforgeeks.org/templating-with-jinja2-in-flask/
 import os
 
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template
 from services.users import users_blueprint
 from services.articles import articles_blueprint
 from services.comments import comments_blueprint
@@ -29,6 +29,16 @@ app.register_blueprint(comments_blueprint, url_prefix='/comments')
 def home():
     return redirect(url_for('users_blueprint.signin'))
 
+
+# 토큰이 만료된 경우
+@jwt.expired_token_loader
+def handleWithExpiredToken(jwt_header, jwt_payload):
+    return render_template('signin.html', isExpired=True)
+
+# 토큰이 없던 경우
+@jwt.unauthorized_loader
+def handleWithNoToken(reason):
+    return render_template('signin.html', hasNoToken=True)
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5001, debug=True)
