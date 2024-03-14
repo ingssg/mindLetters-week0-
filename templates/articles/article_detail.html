@@ -97,7 +97,7 @@
     background-color: #007bff;
     color: white;
   }
-  
+
   #blind-container {
     margin-bottom: 5px;
   }
@@ -111,7 +111,7 @@
     font-weight: bolder;
     border-bottom: 1px solid rgb(188, 188, 188);
   }
-  
+
   #info dd{
     margin-right: 5px;
   }
@@ -147,17 +147,17 @@
       {% if article.topic=="good" %}
         <p class="pink">칭찬해요 😊</p>
       {% else %}
-        <p class="blue">싫어요😡</p>
+        <p class="blue">아쉬워요 🥲</p>
       {% endif %}
     </div>
   </div>
 
   <div id="letter-container" class="card">
-  
+
     <div id="title"class="input-group mb-3">
       {{article.title}}
     </div>
-  
+
     <div id="content" class="input-group">
       {{article.body}}
     </div>
@@ -174,7 +174,7 @@
       <dt>생성일 :</dt>
       <dd>{{article.created_at}}</dd>
     </dl>
-  
+
   </div>
   <br>
 
@@ -204,7 +204,7 @@
     </div>
 
       <ul id="comment-list" class="list-group">
-        <!-- <li class="list-group-item">  
+        <!-- <li class="list-group-item">
           <div class="justify-content-between d-flex">
             <div>익명</div>
             <div>2024.01.01</div>
@@ -223,7 +223,7 @@
 <script>
 
   const article = "{{article._id}}";
-  
+
 
   $(document).ready(function () {
     getComments()
@@ -249,7 +249,7 @@
                   alert("서버 오류!");
               }
           },
-      });      
+      });
   }
 
   function makeComment(index, id, author, date, comment, is_blind) {
